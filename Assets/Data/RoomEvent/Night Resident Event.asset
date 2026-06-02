@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768fe297404b47d8afa126dd8353c410, type: 3}
+  m_Name: Night Resident Event
+  m_EditorClassIdentifier: 
+  eventName: 夜半三更的规培生
+  category: 0
+  description: 你推开半掩的房门，听见一阵狂躁的嚎叫。一个面容憔悴的规培生正对着天书一样的病例疯狂抓扯着自己的头发，让本不富裕的发量雪上加霜：“可恶！病人症状为什么没有一处能对得上！内科学里不是这样的！应该是先白细胞升高，然后引发普通的炎症反应，最后乖乖打两天抗生素退烧！病人怎么烧到43度还能生龙活虎的！？病理生理学里根本不是这样！我不接受！！”
+  choices:
+  - label: A：“你太累了，你现在最需要的是婴儿般的睡眠（举起手里的重物）”
+    requiresCheck: 1
+    check:
+      stat: 0
+      comparison: 0
+      targetNumber: 6
+    directOutcome:
+      resultText: 
+      effects: []
+    successOutcome:
+      resultText: 他晕倒了，你觉得自己简直是一个带善人。
+      effects:
+      - effectType: 0
+        stat: 1
+        statDelta: 1
+        itemName: 
+        itemAmount: 1
+    failureOutcome:
+      resultText: 你尝试击晕他但失败了，他的怒火转移到了你的身上，他和你猛烈地搏斗起来。
+      effects:
+      - effectType: 0
+        stat: 2
+        statDelta: -2
+        itemName: 
+        itemAmount: 1
+  - label: B：默默拉上门转身离开
+    requiresCheck: 0
+    check:
+      stat: 0
+      comparison: 1
+      targetNumber: 1
+    directOutcome:
+      resultText: 你默默拉上门转身离开。
+      effects: []
+    successOutcome:
+      resultText: 
+      effects: []
+    failureOutcome:
+      resultText: 
+      effects: []

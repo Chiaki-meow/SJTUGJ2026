@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768fe297404b47d8afa126dd8353c410, type: 3}
+  m_Name: Muttering Patient Omen
+  m_EditorClassIdentifier: 
+  eventName: 喃喃自语的患者
+  category: 2
+  description: 在探寻房间时，你听到了微弱的轮椅摩擦声。一名看不清面孔、穿着破旧统一病号服的患者不知何时出现在你的身后。他僵坐在老旧的医用轮椅上，身形枯瘦，浑身浴血，一只手死死攥着一把锈迹斑斑的医用手术刀，另一只手拿着一卷血迹斑斑的绷带。随后他开始喃喃自语：“...血..，不够...杀死你...”突然他猛地举起手术刀。
+  choices:
+  - label: A：尝试反击取下他手中的手术刀
+    requiresCheck: 1
+    check:
+      stat: 0
+      comparison: 1
+      targetNumber: 3
+    directOutcome:
+      resultText: 
+      effects: []
+    successOutcome:
+      resultText: 在你出色的格斗技术下，患者这一刀扎在了自己身上，鲜血喷射在绷带上，几分钟后，他身体缓缓瘫软在轮椅上，彻底失去生机。
+      effects:
+      - effectType: 1
+        stat: 0
+        statDelta: 0
+        itemName: 染血的手术刀
+        itemAmount: 1
+    failureOutcome:
+      resultText: 你笨拙的格挡让他正好划破了你的手臂，患者猛的叫出声，用手中的绷带尝试为你止血，在你还在考虑感染风险的时候，患者消失不见，只剩下空轮椅和椅子上的手术刀。
+      effects:
+      - effectType: 0
+        stat: 0
+        statDelta: -1
+        itemName: 
+        itemAmount: 1
+      - effectType: 1
+        stat: 0
+        statDelta: 0
+        itemName: 染血的手术刀
+        itemAmount: 1
+  - label: B：驻足话疗，尝试安抚他的情绪
+    requiresCheck: 1
+    check:
+      stat: 1
+      comparison: 1
+      targetNumber: 5
+    directOutcome:
+      resultText: 
+      effects: []
+    successOutcome:
+      resultText: 你缓慢轻声安抚，他紧绷的身体逐渐放松，嘴里念叨着一个你不知道的名字。突然他划破了自己的手指，在绷带上写着什么，之后把纱布递给了你。
+      effects:
+      - effectType: 1
+        stat: 0
+        statDelta: 0
+        itemName: 患者的遗书
+        itemAmount: 1
+    failureOutcome:
+      resultText: 你的安抚毫无作用，患者发出了不可名状的尖啸声，随后突然无声消散，轮椅上只剩下一卷绷带。
+      effects:
+      - effectType: 0
+        stat: 1
+        statDelta: -1
+        itemName: 
+        itemAmount: 1
+      - effectType: 1
+        stat: 0
+        statDelta: 0
+        itemName: 患者的遗书
+        itemAmount: 1
