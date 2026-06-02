@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Room Card Data
   sprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  eventData: {fileID: 11400000, guid: 6a085d41cbf444ddbb7855970db5d1d0, type: 2}
   doorCount: 3
