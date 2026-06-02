@@ -3,101 +3,113 @@ using UnityEngine;
 
 namespace Gameplay
 {
-public class BoardManager : MonoBehaviour
-{
-    public RoomTile roomPrefab;
-    public RoomCardData startRoom;
-    public List<RoomCardData> deck = new();
-
-    public float tileSize = 1f;
-
-    private Dictionary<Vector2Int, RoomTile> placedRooms = new();
-
-    private void Start()
+    public class BoardManager : MonoBehaviour
     {
-        PlaceRoom(startRoom, Vector2Int.zero);
-    }
+        public RoomCard roomPrefab;
+        public RoomCardData startRoom;
+        public List<RoomCardData> deck = new();
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
+        public float tileSize = 3f;
+
+        private Dictionary<Vector2Int, RoomCard> placedRooms = new();
+
+        private void Awake()
         {
-            OnPlayerEnterRoom(Vector2Int.zero);
+            if (roomPrefab == null)
+            {
+                Debug.LogError("BoardManager needs a room prefab.", this);
+                return;
+            }
+
+            if (startRoom == null)
+            {
+                Debug.LogError("BoardManager needs a start room.", this);
+                return;
+            }
+
+            PlaceRoom(startRoom, Vector2Int.zero);
         }
-    }
-    
-    public void OnPlayerEnterRoom(Vector2Int position)
-    {
-        if (!placedRooms.ContainsKey(position))
-            return;
 
-        RoomTile room = placedRooms[position];
-
-        if (room.hasExpanded)
-            return;
-
-        room.hasExpanded = true;
-
-        int count = room.data.doorCount;
-
-        ExpandFrom(position, count);
-    }
-
-    private void ExpandFrom(Vector2Int origin, int count)
-    {
-        Vector2Int[] directions =
+        public RoomCard GetRoom(Vector2Int position)
         {
-            Vector2Int.up,
-            Vector2Int.right,
-            Vector2Int.down,
-            Vector2Int.left
-        };
+            placedRooms.TryGetValue(position, out RoomCard room);
+            return room;
+        }
 
-        foreach (Vector2Int dir in directions)
+        public bool TryDrawAndPlaceRoom(Vector2Int origin, Vector2Int direction, out RoomCard placedRoom)
         {
-            if (count <= 0)
-                break;
+            placedRoom = null;
 
-            Vector2Int nextPos = origin + dir;
+            RoomCard originRoom = GetRoom(origin);
+            Vector2Int nextPosition = origin + direction;
 
-            if (placedRooms.ContainsKey(nextPos))
-                continue;
+            if (originRoom == null)
+            {
+                Debug.LogWarning($"Cannot place room from {origin}: no origin room.");
+                return false;
+            }
+
+            if (originRoom.remainingDoors <= 0)
+            {
+                Debug.LogWarning($"Cannot place room from {origin}: no remaining doors.", originRoom);
+                return false;
+            }
+
+            if (placedRooms.ContainsKey(nextPosition))
+            {
+                Debug.LogWarning($"Cannot place room at {nextPosition}: position is already occupied.");
+                return false;
+            }
 
             RoomCardData card = DrawCard();
 
             if (card == null)
-                return;
+            {
+                Debug.LogWarning("Cannot place room: deck is empty.", this);
+                return false;
+            }
 
-            PlaceRoom(card, nextPos);
+            placedRoom = PlaceRoom(card, nextPosition);
+            originRoom.remainingDoors--;
 
-            count--;
+            return placedRoom != null;
+        }
+
+        public bool HasRoom(Vector2Int position)
+        {
+            return placedRooms.ContainsKey(position);
+        }
+
+        public Vector3 GridToWorldPosition(Vector2Int gridPosition)
+        {
+            return new Vector3(
+                gridPosition.x * tileSize,
+                gridPosition.y * tileSize,
+                0f
+            );
+        }
+
+        private RoomCard PlaceRoom(RoomCardData card, Vector2Int gridPosition)
+        {
+            Vector3 worldPosition = GridToWorldPosition(gridPosition);
+
+            RoomCard room = Instantiate(roomPrefab, worldPosition, Quaternion.identity);
+            room.Init(card, gridPosition);
+
+            placedRooms.Add(gridPosition, room);
+            return room;
+        }
+
+        private RoomCardData DrawCard()
+        {
+            if (deck.Count == 0)
+                return null;
+
+            int index = Random.Range(0, deck.Count);
+            RoomCardData card = deck[index];
+            deck.RemoveAt(index);
+
+            return card;
         }
     }
-
-    private RoomCardData DrawCard()
-    {
-        if (deck.Count == 0)
-            return null;
-
-        int index = Random.Range(0, deck.Count);
-        RoomCardData card = deck[index];
-        deck.RemoveAt(index);
-
-        return card;
-    }
-
-    private void PlaceRoom(RoomCardData card, Vector2Int gridPosition)
-    {
-        Vector3 worldPosition = new Vector3(
-            gridPosition.x * tileSize,
-            gridPosition.y * tileSize,
-            0f
-        );
-
-        RoomTile room = Instantiate(roomPrefab, worldPosition, Quaternion.identity);
-        room.Init(card, gridPosition);
-
-        placedRooms.Add(gridPosition, room);
-    }
-}
 }

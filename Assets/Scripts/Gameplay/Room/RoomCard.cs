@@ -2,11 +2,12 @@ using UnityEngine;
 
 namespace Gameplay
 {
-    public class RoomTile : MonoBehaviour
+    public class RoomCard : MonoBehaviour
     {
         public RoomCardData data;
         public Vector2Int gridPosition;
-        public bool hasExpanded;
+        public int remainingDoors;
+        public bool hasResolvedEvent;
 
         private SpriteRenderer spriteRenderer;
 
@@ -19,7 +20,8 @@ namespace Gameplay
         {
             data = newData;
             gridPosition = newGridPosition;
-            hasExpanded = false;
+            remainingDoors = data != null ? data.doorCount : 0;
+            hasResolvedEvent = false;
 
             if (spriteRenderer != null && data != null)
             {

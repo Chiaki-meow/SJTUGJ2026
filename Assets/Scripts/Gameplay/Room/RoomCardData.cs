@@ -8,8 +8,9 @@ namespace Gameplay
     {
         public string roomName;
         public Sprite sprite;
+        public RoomEventData eventData;
 
-        [Range(0, 4)]
+        [Range(1, 4)]
         public int doorCount = 1;
 
         private void OnValidate()
@@ -43,7 +44,7 @@ namespace Gameplay
                 if (!char.IsDigit(assetName[i]))
                     continue;
 
-                parsedDoorCount = Mathf.Clamp(assetName[i] - '0', 0, 4);
+                parsedDoorCount = Mathf.Clamp(assetName[i] - '0', 1, 4);
                 return true;
             }
 
