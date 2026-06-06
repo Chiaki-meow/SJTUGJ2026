@@ -1,0 +1,214 @@
+using System;
+using UnityEngine;
+
+namespace Gameplay
+{
+    public enum InGamePhase
+    {
+        Preparation,
+        Exploring,
+        ResolvingRoomEvent,
+        TruthRevealed,
+        GameOver
+    }
+
+    public class InGameManager : MonoBehaviour
+    {
+        public static InGameManager Instance { get; private set; }
+
+        public BoardManager boardManager;
+        public RoomEventHandler roomEventHandler;
+        public PlayerGridMovement playerMovement;
+        public PlayerStateManager playerStateManager;
+        public PlayerInventory playerInventory;
+
+        [SerializeField] private InGamePhase phase = InGamePhase.Exploring;
+        [SerializeField] private int turnCount;
+        [SerializeField] private int omenCount;
+        [SerializeField] private bool truthRevealed;
+
+        private RoomCard currentRoom;
+        private RoomEventData currentEventData;
+        private bool? gameResult;
+
+        public InGamePhase Phase => phase;
+        public int TurnCount => turnCount;
+        public int OmenCount => omenCount;
+        public bool TruthRevealed => truthRevealed;
+        public RoomCard CurrentRoom => currentRoom;
+        public RoomEventData CurrentEventData => currentEventData;
+        public bool? GameResult => gameResult;
+        public bool CanPlayerAct => phase == InGamePhase.Exploring || phase == InGamePhase.TruthRevealed;
+
+        public event Action<InGamePhase> OnPhaseChanged;
+        public event Action<int> OnTurnCountChanged;
+        public event Action<int> OnOmenCountChanged;
+        public event Action OnTruthRevealed;
+        public event Action<bool> OnGameEnded;
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        private void Start()
+        {
+            ResolveReferences();
+            SubscribePlayerState();
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribePlayerState();
+
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        public void EnterRoom(Vector2Int gridPosition)
+        {
+            if (!CanPlayerAct || boardManager == null)
+                return;
+
+            RoomCard room = boardManager.GetRoom(gridPosition);
+
+            if (room == null || room.hasResolvedEvent)
+                return;
+
+            currentRoom = room;
+            currentEventData = room.data != null ? room.data.eventData : null;
+            SetPhase(InGamePhase.ResolvingRoomEvent);
+
+            if (roomEventHandler != null)
+            {
+                roomEventHandler.HandleRoomEvent(room, currentEventData, ResolveCurrentRoom);
+            }
+            else
+            {
+                ResolveCurrentRoom();
+            }
+        }
+
+        public void StartNextTurn()
+        {
+            turnCount++;
+            OnTurnCountChanged?.Invoke(turnCount);
+        }
+
+        public void AddOmen(int amount = 1)
+        {
+            if (amount <= 0)
+                return;
+
+            omenCount += amount;
+            OnOmenCountChanged?.Invoke(omenCount);
+        }
+
+        public void RevealTruth()
+        {
+            if (truthRevealed)
+                return;
+
+            truthRevealed = true;
+            SetPhase(InGamePhase.TruthRevealed);
+            OnTruthRevealed?.Invoke();
+        }
+
+        public void EndGame(bool isWin)
+        {
+            if (phase == InGamePhase.GameOver)
+                return;
+
+            gameResult = isWin;
+            SetPhase(InGamePhase.GameOver);
+            OnGameEnded?.Invoke(isWin);
+        }
+
+        private void ResolveCurrentRoom()
+        {
+            if (currentRoom != null)
+            {
+                currentRoom.hasResolvedEvent = true;
+            }
+
+            if (currentEventData != null && currentEventData.category == RoomEventCategory.Omen)
+            {
+                AddOmen();
+            }
+
+            currentRoom = null;
+            currentEventData = null;
+
+            if (phase != InGamePhase.GameOver)
+            {
+                SetPhase(truthRevealed ? InGamePhase.TruthRevealed : InGamePhase.Exploring);
+            }
+        }
+
+        private void ResolveReferences()
+        {
+            if (boardManager == null)
+            {
+                boardManager = FindObjectOfType<BoardManager>();
+            }
+
+            if (roomEventHandler == null)
+            {
+                roomEventHandler = FindObjectOfType<RoomEventHandler>();
+            }
+
+            if (playerMovement == null)
+            {
+                playerMovement = FindObjectOfType<PlayerGridMovement>();
+            }
+
+            if (playerStateManager == null)
+            {
+                playerStateManager = PlayerStateManager.Instance != null ? PlayerStateManager.Instance : FindObjectOfType<PlayerStateManager>();
+            }
+
+            if (playerInventory == null)
+            {
+                playerInventory = FindObjectOfType<PlayerInventory>();
+            }
+        }
+
+        private void SubscribePlayerState()
+        {
+            if (playerStateManager != null)
+            {
+                playerStateManager.OnDied += HandlePlayerDied;
+            }
+        }
+
+        private void UnsubscribePlayerState()
+        {
+            if (playerStateManager != null)
+            {
+                playerStateManager.OnDied -= HandlePlayerDied;
+            }
+        }
+
+        private void HandlePlayerDied()
+        {
+            EndGame(false);
+        }
+
+        private void SetPhase(InGamePhase nextPhase)
+        {
+            if (phase == nextPhase)
+                return;
+
+            phase = nextPhase;
+            OnPhaseChanged?.Invoke(phase);
+        }
+    }
+}

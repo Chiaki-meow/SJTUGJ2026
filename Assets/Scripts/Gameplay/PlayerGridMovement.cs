@@ -5,6 +5,7 @@ namespace Gameplay
     public class PlayerGridMovement : MonoBehaviour
     {
         public BoardManager boardManager;
+        public InGameManager inGameManager;
         public GameFlowManager gameFlowManager;
         public Vector2Int gridPosition;
         public bool enterStartingRoomOnStart;
@@ -25,6 +26,11 @@ namespace Gameplay
             if (boardManager == null)
             {
                 boardManager = FindObjectOfType<BoardManager>();
+            }
+
+            if (inGameManager == null)
+            {
+                inGameManager = InGameManager.Instance != null ? InGameManager.Instance : FindObjectOfType<InGameManager>();
             }
 
             if (gameFlowManager == null)
@@ -49,7 +55,10 @@ namespace Gameplay
 
         private void Update()
         {
-            if (gameFlowManager != null && !gameFlowManager.CanMove)
+            if (inGameManager != null && !inGameManager.CanPlayerAct)
+                return;
+
+            if (inGameManager == null && gameFlowManager != null && !gameFlowManager.CanMove)
                 return;
 
             Vector2Int direction = ReadMoveDirection();
@@ -96,7 +105,11 @@ namespace Gameplay
 
         private void EnterCurrentRoom()
         {
-            if (gameFlowManager != null)
+            if (inGameManager != null)
+            {
+                inGameManager.EnterRoom(gridPosition);
+            }
+            else if (gameFlowManager != null)
             {
                 gameFlowManager.EnterRoom(gridPosition);
             }

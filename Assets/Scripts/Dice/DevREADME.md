@@ -33,7 +33,7 @@ ProjectSettings/
 
 ## Dice 系统概览
 
-Dice 系统目前是纯 C# 逻辑层，不继承 `MonoBehaviour`，也不依赖场景对象。
+Dice 系统目前是纯 C# 逻辑层，不继承 `MonoBehaviour`，也不依赖场景对象。默认检定骰符合策划案：每颗骰子的面值为 `0 / 1 / 2`，骰子数量由调用方通过 `diceCount` 传入。
 
 ### `DiceManager`
 
@@ -45,7 +45,7 @@ Dice 系统目前是纯 C# 逻辑层，不继承 `MonoBehaviour`，也不依赖�
 
 ```csharp
 DiceManager diceManager = new DiceManager();
-diceManager.StartCheck(DiceCheckType.Physical, 3, 10, DiceCompareRule.GreaterOrEqual, true);
+diceManager.StartCheck(DiceCheckType.Physical, 3, 4, DiceCompareRule.GreaterOrEqual, true);
 DiceCheckResultModel result = diceManager.ConfirmCheckResult();
 ```
 
@@ -55,7 +55,7 @@ DiceCheckResultModel result = diceManager.ConfirmCheckResult();
 - `StartOmenCheck(int omenCount, int diceCount)`：发起预兆检定。
 - `ConfirmCheckResult()`：确认并结算检定。
 - `CancelCurrentCheck()`：取消当前检定。
-- `CreateDicePool(int diceCount, DiceCheckType checkType)`：创建默认骰池。
+- `CreateDicePool(int diceCount, DiceCheckType checkType)`：创建默认 `0 / 1 / 2` 面值骰池。
 - `CreateDicePool(int diceCount, int minValue, int maxValue, DiceCheckType checkType)`：创建范围骰池。
 - `CreateDicePool(int diceCount, List<int> faces, DiceCheckType checkType)`：创建指定面值骰池。
 - `CreateDice(int minValue, int maxValue, string sourceId)`：创建范围骰子。
@@ -172,7 +172,7 @@ DiceCheckResultModel result = diceManager.ConfirmCheckResult();
 
 ## 建议测试点
 
-1. 创建 `DiceManager`，发起 3D6 大于等于 10 的检定。
+1. 创建 `DiceManager`，发起 3 个 `0 / 1 / 2` 骰大于等于 4 的检定。
 2. 确认 `StartCheck` 后骰子数量正确，所有骰子已投掷。
 3. 调用 `SetDiceValue`、`AddDiceValue` 后确认总点数刷新。
 4. 锁定骰子后确认不能重掷。

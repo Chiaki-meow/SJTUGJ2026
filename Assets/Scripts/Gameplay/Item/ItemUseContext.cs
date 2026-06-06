@@ -3,8 +3,10 @@ namespace Gameplay
     public class ItemUseContext
     {
         public PlayerInventory Inventory;
+        public PlayerStateManager PlayerState;
         public PlayerGridMovement Player;
         public BoardManager Board;
+        public InGameManager InGame;
         public GameFlowManager GameFlow;
         public RoomCard CurrentRoom;
         public RoomEventData CurrentEvent;

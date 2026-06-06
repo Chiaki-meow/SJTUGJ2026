@@ -84,6 +84,7 @@ namespace Gameplay
         public RoomEventEffectType effectType;
         public CharacterStat stat;
         public int statDelta;
+        public ItemData itemData;
         public string itemName;
         public int itemAmount = 1;
     }
