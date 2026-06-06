@@ -17,8 +17,13 @@ namespace UI
         public Transform choicesParent;
         public Button choiceButtonPrefab;
         public Button continueButton;
+        public PlayerStateManager playerStateManager;
+        public PlayerInventory playerInventory;
+        public InGameManager inGameManager;
 
         private Action onFinished;
+        private RoomCard activeRoom;
+        private RoomEventData activeEventData;
 
         private void Awake()
         {
@@ -44,6 +49,9 @@ namespace UI
         public override void HandleRoomEvent(RoomCard room, RoomEventData eventData, Action finishedCallback)
         {
             onFinished = finishedCallback;
+            activeRoom = room;
+            activeEventData = eventData;
+            ResolveReferences();
 
             if (panelRoot != null)
             {
@@ -106,8 +114,57 @@ namespace UI
                 checkSummary = $"Roll: {roll} / {FormatCheck(choice.check)} / {(success ? "Success" : "Failure")}\n\n";
             }
 
+            ApplyOutcomeEffects(outcome);
             SetText(resultText, checkSummary + FormatOutcome(outcome));
             SetContinueVisible(true);
+        }
+
+        private void ApplyOutcomeEffects(RoomEventOutcomeData outcome)
+        {
+            if (outcome == null || outcome.effects == null)
+                return;
+
+            for (int i = 0; i < outcome.effects.Length; i++)
+            {
+                RoomEventEffectData effect = outcome.effects[i];
+                if (effect == null)
+                    continue;
+
+                if (effect.effectType == RoomEventEffectType.StatChange)
+                {
+                    if (playerStateManager != null)
+                    {
+                        playerStateManager.ApplyStatChange(effect.stat, effect.statDelta);
+                    }
+                }
+                else if (effect.effectType == RoomEventEffectType.GainItem)
+                {
+                    if (playerInventory != null && effect.itemData != null)
+                    {
+                        playerInventory.AddItem(effect.itemData, effect.itemAmount);
+                    }
+                }
+            }
+        }
+
+        private void ResolveReferences()
+        {
+            if (inGameManager == null)
+            {
+                inGameManager = InGameManager.Instance != null ? InGameManager.Instance : FindObjectOfType<InGameManager>();
+            }
+
+            if (playerStateManager == null)
+            {
+                playerStateManager = PlayerStateManager.Instance != null ? PlayerStateManager.Instance : FindObjectOfType<PlayerStateManager>();
+            }
+
+            if (playerInventory == null)
+            {
+                playerInventory = inGameManager != null && inGameManager.playerInventory != null
+                    ? inGameManager.playerInventory
+                    : FindObjectOfType<PlayerInventory>();
+            }
         }
 
         private static bool IsCheckSuccessful(int roll, RoomEventCheckData check)
@@ -130,6 +187,8 @@ namespace UI
 
             Action finishedCallback = onFinished;
             onFinished = null;
+            activeRoom = null;
+            activeEventData = null;
             finishedCallback?.Invoke();
         }
 
@@ -197,7 +256,10 @@ namespace UI
                 return "- None";
 
             if (effect.effectType == RoomEventEffectType.GainItem)
-                return $"- Gain item: {effect.itemName} x{effect.itemAmount}";
+            {
+                string itemDisplayName = effect.itemData != null ? effect.itemData.displayName : effect.itemName;
+                return $"- Gain item: {itemDisplayName} x{effect.itemAmount}";
+            }
 
             return $"- {effect.stat}: {effect.statDelta:+#;-#;0}";
         }

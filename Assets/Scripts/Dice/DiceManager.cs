@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class DiceManager
 {
+    private static readonly List<int> DefaultCheckDiceFaces = new List<int> { 0, 1, 2 };
+
     private readonly List<DiceModel> currentDiceList = new List<DiceModel>();
     private DiceCheckType currentCheckType;
     private int currentDifficulty;
@@ -74,7 +76,7 @@ public class DiceManager
 
     public void CreateDicePool(int diceCount, DiceCheckType checkType)
     {
-        CreateDicePool(diceCount, 1, 6, checkType);
+        CreateDicePool(diceCount, DefaultCheckDiceFaces, checkType);
     }
 
     public void CreateDicePool(int diceCount, int minValue, int maxValue, DiceCheckType checkType)
@@ -363,8 +365,8 @@ public class DiceManager
     public void ApplyAddDiceModifier(DiceModifierModel modifier)
     {
         int count = modifier.GetIntParam("count", 1);
-        int minValue = modifier.GetIntParam("minValue", 1);
-        int maxValue = modifier.GetIntParam("maxValue", 6);
+        int minValue = modifier.GetIntParam("minValue", 0);
+        int maxValue = modifier.GetIntParam("maxValue", 2);
         string sourceId = modifier.GetStringParam("sourceId", modifier.modifierId);
 
         for (int i = 0; i < count; i++)
