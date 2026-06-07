@@ -44,6 +44,8 @@ namespace Gameplay
         public event Action<int> OnTurnCountChanged;
         public event Action<int> OnOmenCountChanged;
         public event Action OnTruthRevealed;
+        public event Action<RoomCard> OnRoomEntered;
+        public event Action<RoomCard> OnRoomResolved;
         public event Action<bool> OnGameEnded;
 
         private void Awake()
@@ -85,6 +87,7 @@ namespace Gameplay
 
             currentRoom = room;
             currentEventData = room.data != null ? room.data.eventData : null;
+            OnRoomEntered?.Invoke(room);
             SetPhase(InGamePhase.ResolvingRoomEvent);
 
             if (roomEventHandler != null)
@@ -134,6 +137,8 @@ namespace Gameplay
 
         private void ResolveCurrentRoom()
         {
+            RoomCard resolvedRoom = currentRoom;
+
             if (currentRoom != null)
             {
                 currentRoom.hasResolvedEvent = true;
@@ -146,6 +151,7 @@ namespace Gameplay
 
             currentRoom = null;
             currentEventData = null;
+            OnRoomResolved?.Invoke(resolvedRoom);
 
             if (phase != InGamePhase.GameOver)
             {

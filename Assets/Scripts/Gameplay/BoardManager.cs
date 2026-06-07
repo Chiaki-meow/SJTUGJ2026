@@ -75,6 +75,32 @@ namespace Gameplay
             return placedRoom != null;
         }
 
+        public bool TryPlaceFixedRoom(RoomCardData card, Vector2Int gridPosition, out RoomCard placedRoom)
+        {
+            placedRoom = null;
+
+            if (card == null)
+            {
+                Debug.LogWarning("Cannot place fixed room: room data is null.", this);
+                return false;
+            }
+
+            if (roomPrefab == null)
+            {
+                Debug.LogWarning("Cannot place fixed room: room prefab is null.", this);
+                return false;
+            }
+
+            if (placedRooms.ContainsKey(gridPosition))
+            {
+                Debug.LogWarning($"Cannot place fixed room at {gridPosition}: position is already occupied.", this);
+                return false;
+            }
+
+            placedRoom = PlaceRoom(card, gridPosition);
+            return placedRoom != null;
+        }
+
         public bool HasRoom(Vector2Int position)
         {
             return placedRooms.ContainsKey(position);
