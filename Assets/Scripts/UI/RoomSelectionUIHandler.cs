@@ -67,6 +67,7 @@ namespace UI
             }
 
             RefreshSlots();
+            AudioManager.PlaySfx(SfxEnum.DrawCard);
 
             if (panelRoot != null)
             {
@@ -97,6 +98,7 @@ namespace UI
             }
 
             RefreshSlots();
+            AudioManager.PlaySfx(SfxEnum.SpinRoom);
 
             if (panelRoot != null)
             {
@@ -313,6 +315,7 @@ namespace UI
                 return;
 
             RoomPlacementOption selected = currentChoices[index];
+            AudioManager.PlaySfx(isRotationMode ? SfxEnum.SpinRoom : SfxEnum.ButtonClick);
             Hide();
             Action<RoomPlacementOption> callback = selectedCallback;
             selectedCallback = null;
@@ -325,11 +328,13 @@ namespace UI
             {
                 Action dismissedCallback = placementFailedDismissedCallback;
                 placementFailedDismissedCallback = null;
+                AudioManager.PlaySfx(SfxEnum.ButtonClick);
                 Hide();
                 dismissedCallback?.Invoke();
                 return;
             }
 
+            AudioManager.PlaySfx(SfxEnum.ButtonClick);
             Hide();
             Action<RoomPlacementOption> callback = selectedCallback;
             selectedCallback = null;

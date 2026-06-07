@@ -46,6 +46,7 @@ namespace Gameplay
             CanMove = false;
 
             RoomEventData eventData = room.data != null ? room.data.eventData : null;
+            AudioManager.PlaySfx(SfxEnum.EventBegin);
 
             if (roomEventHandler != null)
             {

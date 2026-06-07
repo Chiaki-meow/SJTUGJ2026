@@ -21,6 +21,9 @@ namespace Gameplay
         public PlayerGridMovement playerMovement;
         public PlayerStateManager playerStateManager;
         public PlayerInventory playerInventory;
+        public Phase2Director phase2Director;
+        public bool triggerPhase2OnOmenThreshold = true;
+        public int omenCountForPhase2 = 3;
 
         [SerializeField] private InGamePhase phase = InGamePhase.Exploring;
         [SerializeField] private int turnCount;
@@ -113,6 +116,7 @@ namespace Gameplay
 
             omenCount += amount;
             OnOmenCountChanged?.Invoke(omenCount);
+            TryTriggerPhase2FromOmenCount();
         }
 
         public void RevealTruth()
@@ -184,6 +188,23 @@ namespace Gameplay
             if (playerInventory == null)
             {
                 playerInventory = FindObjectOfType<PlayerInventory>();
+            }
+
+            if (phase2Director == null)
+            {
+                phase2Director = FindObjectOfType<Phase2Director>();
+            }
+        }
+
+        private void TryTriggerPhase2FromOmenCount()
+        {
+            if (!triggerPhase2OnOmenThreshold || omenCount < omenCountForPhase2)
+                return;
+
+            ResolveReferences();
+            if (phase2Director != null && phase2Director.State == Phase2State.NotStarted)
+            {
+                phase2Director.TriggerTruthRevealFailed();
             }
         }
 

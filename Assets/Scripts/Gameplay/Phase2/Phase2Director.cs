@@ -69,7 +69,13 @@ namespace Gameplay
 
         public void TriggerTruthRevealFailed()
         {
-            BeginPhase2(ResolveRouteFromInventory());
+            Phase2Route route = ResolveRouteFromInventory();
+            if (route == Phase2Route.None)
+            {
+                route = Phase2Route.BloodyKnife;
+            }
+
+            BeginPhase2(route);
         }
 
         public bool BeginPhase2(Phase2Route route)

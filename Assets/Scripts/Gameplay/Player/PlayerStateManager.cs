@@ -84,6 +84,11 @@ namespace Gameplay
             if (physical == clampedValue)
                 return;
 
+            if (clampedValue < physical)
+            {
+                AudioManager.PlaySfx(SfxEnum.PhysicalDown);
+            }
+
             physical = clampedValue;
             NotifyStateChanged();
         }
@@ -93,6 +98,11 @@ namespace Gameplay
             int clampedValue = Mathf.Max(0, value);
             if (mental == clampedValue)
                 return;
+
+            if (clampedValue < mental)
+            {
+                AudioManager.PlaySfx(SfxEnum.MentalDown);
+            }
 
             mental = clampedValue;
             NotifyStateChanged();
@@ -135,6 +145,11 @@ namespace Gameplay
             int clampedValue = Mathf.Clamp(health + delta, 0, maxHealth);
             if (health == clampedValue)
                 return;
+
+            if (clampedValue < health)
+            {
+                AudioManager.PlaySfx(SfxEnum.HpDown);
+            }
 
             health = clampedValue;
             NotifyStateChanged();

@@ -489,6 +489,7 @@ GameObject:
   - component: {fileID: 261366901}
   - component: {fileID: 261366900}
   - component: {fileID: 261366899}
+  - component: {fileID: 261366902}
   m_Layer: 5
   m_Name: origin
   m_TagString: Untagged
@@ -598,6 +599,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 261366897}
   m_CullTransparentMesh: 1
+--- !u!114 &261366902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261366897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16acf9016eddd1e48aba4da5da60f3d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 261366899}
+  sfxId: 1
 --- !u!1 &265151017
 GameObject:
   m_ObjectHideFlags: 0
@@ -979,6 +994,7 @@ GameObject:
   - component: {fileID: 486370618}
   - component: {fileID: 486370617}
   - component: {fileID: 486370620}
+  - component: {fileID: 486370621}
   m_Layer: 5
   m_Name: buttonStart
   m_TagString: Untagged
@@ -1101,6 +1117,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 486370617}
   sceneName: Scene3Main
+--- !u!114 &486370621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486370615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16acf9016eddd1e48aba4da5da60f3d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 486370617}
+  sfxId: 1
 --- !u!1 &519112962
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,16 +1464,46 @@ MonoBehaviour:
   sfxSource: {fileID: 265151018}
   bgmEntries:
   - id: 1
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 8771b9c0d13e11c4fabbd0d200422837, type: 3}
     volume: 1
   - id: 2
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 0a7370c0a50a9884e8cec67544dde31f, type: 3}
     volume: 1
   - id: 3
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 07f3e95041f11da428e97f58998f1e9b, type: 3}
     volume: 1
   sfxEntries:
   - id: 1
+    clip: {fileID: 8300000, guid: 03f69aefb238c7247bfe08415e9aef73, type: 3}
+    volume: 1
+  - id: 2
+    clip: {fileID: 8300000, guid: 4a94743e0e66de447b9ad62dad4cc832, type: 3}
+    volume: 1
+  - id: 3
+    clip: {fileID: 8300000, guid: 6cdc4350265767c4993a5dc6be1cfe23, type: 3}
+    volume: 1
+  - id: 4
+    clip: {fileID: 8300000, guid: 58bdea1cfb2c6df4a95aa441cdc67f9b, type: 3}
+    volume: 1
+  - id: 5
+    clip: {fileID: 8300000, guid: 322c0e52487cecf4a82faf49cb38be4d, type: 3}
+    volume: 1
+  - id: 6
+    clip: {fileID: 8300000, guid: 59a8638d134da2344bafb36327b06925, type: 3}
+    volume: 1
+  - id: 7
+    clip: {fileID: 8300000, guid: 7af4f55f9439a504c8e95e3b3d858a87, type: 3}
+    volume: 1
+  - id: 8
+    clip: {fileID: 8300000, guid: 8269dc3a894a19246bcd2e866c82321d, type: 3}
+    volume: 1
+  - id: 9
+    clip: {fileID: 8300000, guid: 0de8418bc1c791440b07fd8e1cdbd762, type: 3}
+    volume: 1
+  - id: 10
+    clip: {fileID: 8300000, guid: e0d51b04bd7b5c942b7d78e46b842e72, type: 3}
+    volume: 1
+  - id: 11
     clip: {fileID: 0}
     volume: 1
   bgmSource: {fileID: 988487428}
@@ -1479,6 +1539,7 @@ GameObject:
   - component: {fileID: 813871743}
   - component: {fileID: 813871742}
   - component: {fileID: 813871741}
+  - component: {fileID: 813871744}
   m_Layer: 5
   m_Name: buttonTree
   m_TagString: Untagged
@@ -1587,6 +1648,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 813871739}
   m_CullTransparentMesh: 1
+--- !u!114 &813871744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813871739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16acf9016eddd1e48aba4da5da60f3d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 813871741}
+  sfxId: 1
 --- !u!1 &974723837
 GameObject:
   m_ObjectHideFlags: 0

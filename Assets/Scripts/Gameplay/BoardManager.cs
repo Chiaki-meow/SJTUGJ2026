@@ -19,11 +19,15 @@ namespace Gameplay
         public int mapWidth = 5;
         public int mapHeight = 5;
         public Vector2Int bossRoomPosition = new Vector2Int(4, 4);
+        public int omenWeightBonusPerNonOmenRoom = 1;
+        public int maxOmenWeightBonus = 8;
 
         private readonly Dictionary<Vector2Int, RoomCard> placedRooms = new();
         private readonly Dictionary<Vector2Int, RoomCard> previewRooms = new();
+        private readonly List<RoomCardData> initialDeck = new();
         private readonly List<RoomCardData> candidateRooms = new();
         private readonly RoomPlacementOption[] reusableOptions = new RoomPlacementOption[3];
+        private int currentOmenWeightBonus;
         private readonly Vector2Int[] directions =
         {
             Vector2Int.up,
@@ -39,6 +43,8 @@ namespace Gameplay
 
         private void Awake()
         {
+            CacheInitialDeck();
+
             if (roomPrefab == null)
             {
                 Debug.LogError("BoardManager needs a room prefab.", this);
@@ -98,6 +104,8 @@ namespace Gameplay
             placedRoom = PlaceRoom(option.data, nextPosition, option.doorLayout);
             if (placedRoom != null)
             {
+                AudioManager.PlaySfx(SfxEnum.PlaceRoom);
+                UpdateOmenWeightAfterPlacement(option.data);
                 placedRoom.remainingDoors = Mathf.Max(0, placedRoom.remainingDoors - 1);
                 originRoom.remainingDoors = Mathf.Max(0, originRoom.remainingDoors - 1);
                 RefreshReachablePreviews();
@@ -153,6 +161,11 @@ namespace Gameplay
             if (results != null)
             {
                 results.Clear();
+            }
+
+            if (deck.Count == 0)
+            {
+                ResetDeck();
             }
 
             if (deck.Count == 0 || count <= 0 || !CanPlaceFromOrigin(origin, direction, out _))
@@ -228,6 +241,11 @@ namespace Gameplay
                 ? CreatePlacementLayout(card)
                 : CreateDoorLayout(card, entranceDirection);
             placedRoom = PlaceRoom(card, gridPosition, layout);
+            if (placedRoom != null)
+            {
+                AudioManager.PlaySfx(SfxEnum.PlaceRoom);
+            }
+
             RefreshReachablePreviews();
             return placedRoom != null;
         }
@@ -248,6 +266,12 @@ namespace Gameplay
                 return false;
 
             FillCandidates();
+            if (candidateRooms.Count == 0)
+            {
+                ResetDeck();
+                FillCandidates();
+            }
+
             if (candidateRooms.Count == 0)
             {
                 failureReason = "随机池里没有可放置的房间。";
@@ -343,11 +367,54 @@ namespace Gameplay
             for (int i = 0; i < deck.Count; i++)
             {
                 RoomCardData card = deck[i];
-                if (card != null && card.doorCount > 0)
+                if (card == null || card.doorCount <= 0)
+                    continue;
+
+                int copies = IsOmenRoom(card) ? 1 + currentOmenWeightBonus : 1;
+                for (int copyIndex = 0; copyIndex < copies; copyIndex++)
                 {
                     candidateRooms.Add(card);
                 }
             }
+        }
+
+        private void CacheInitialDeck()
+        {
+            initialDeck.Clear();
+            for (int i = 0; i < deck.Count; i++)
+            {
+                if (deck[i] != null && !initialDeck.Contains(deck[i]))
+                {
+                    initialDeck.Add(deck[i]);
+                }
+            }
+        }
+
+        private void ResetDeck()
+        {
+            for (int i = 0; i < initialDeck.Count; i++)
+            {
+                if (initialDeck[i] != null && !deck.Contains(initialDeck[i]))
+                {
+                    deck.Add(initialDeck[i]);
+                }
+            }
+        }
+
+        private void UpdateOmenWeightAfterPlacement(RoomCardData card)
+        {
+            if (IsOmenRoom(card))
+            {
+                currentOmenWeightBonus = 0;
+                return;
+            }
+
+            currentOmenWeightBonus = Mathf.Min(maxOmenWeightBonus, currentOmenWeightBonus + Mathf.Max(0, omenWeightBonusPerNonOmenRoom));
+        }
+
+        private static bool IsOmenRoom(RoomCardData card)
+        {
+            return card != null && card.eventData != null && card.eventData.category == RoomEventCategory.Omen;
         }
 
         private bool CanPlaceFromOrigin(Vector2Int origin, Vector2Int direction, out string failureReason)

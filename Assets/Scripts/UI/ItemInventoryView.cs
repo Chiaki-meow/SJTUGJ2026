@@ -50,7 +50,7 @@ namespace UI
                 closeButton.onClick.AddListener(HideUsePanel);
             }
 
-            HideUsePanel();
+            HideUsePanel(false);
         }
 
         private void OnEnable()
@@ -120,6 +120,8 @@ namespace UI
 
         public void SelectSlot(int index)
         {
+            AudioManager.PlaySfx(SfxEnum.ButtonClick);
+
             if (inventory == null || index < 0 || index >= inventory.Items.Count)
                 return;
 
@@ -134,6 +136,10 @@ namespace UI
 
             ItemUseContext context = CreateUseContext();
             bool used = inventory.UseItem(selectedItem, context, out string message);
+            if (used)
+            {
+                AudioManager.PlaySfx(SfxEnum.ButtonClick);
+            }
 
             if (useDescriptionText != null)
             {
@@ -180,6 +186,16 @@ namespace UI
 
         private void HideUsePanel()
         {
+            HideUsePanel(true);
+        }
+
+        private void HideUsePanel(bool playSound)
+        {
+            if (playSound)
+            {
+                AudioManager.PlaySfx(SfxEnum.ButtonClick);
+            }
+
             selectedItem = null;
 
             if (usePanel != null)

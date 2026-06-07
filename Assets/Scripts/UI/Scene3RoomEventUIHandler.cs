@@ -206,6 +206,8 @@ namespace UI
 
         private void SelectChoice(int index)
         {
+            AudioManager.PlaySfx(SfxEnum.ButtonClick);
+
             if (isDeanEncounter)
             {
                 PlayDeanCheck();
@@ -257,6 +259,7 @@ namespace UI
             {
                 int finalValue = result.finalTotalValue + resultBonus;
                 bool isSuccess = finalValue >= difficulty;
+                AudioManager.PlaySfx(isSuccess ? SfxEnum.DiceSuccess : SfxEnum.DiceFail);
                 RoomEventOutcomeData outcome = isSuccess ? choice.successOutcome : choice.failureOutcome;
                 string bonusText = resultBonus > 0 ? $"（道具 +{resultBonus}）" : string.Empty;
                 string summary = $"检定结果：{finalValue}{bonusText} / 目标 {difficulty} / {(isSuccess ? "成功" : "失败")}\n\n";
@@ -294,6 +297,7 @@ namespace UI
                     if (playerInventory != null && effect.itemData != null)
                     {
                         playerInventory.AddItem(effect.itemData, effect.itemAmount);
+                        AudioManager.PlaySfx(SfxEnum.DrawCard);
                         if (itemGainPopup != null)
                         {
                             itemGainPopup.Show(effect.itemData, effect.itemAmount);
@@ -306,6 +310,7 @@ namespace UI
                     if (playerInventory != null && itemData != null)
                     {
                         playerInventory.AddItem(itemData, effect.itemAmount);
+                        AudioManager.PlaySfx(SfxEnum.DrawCard);
                         if (itemGainPopup != null)
                         {
                             itemGainPopup.Show(itemData, effect.itemAmount);
@@ -352,6 +357,7 @@ namespace UI
 
         private void FinishEvent()
         {
+            AudioManager.PlaySfx(SfxEnum.ButtonClick);
             HidePanel();
             Action finishedCallback = onFinished;
             onFinished = null;
@@ -448,6 +454,7 @@ namespace UI
             if (phase2Director.ShouldSkipFirstPatientLetterCheck() && phase2Director.SuccessfulDeanChecks == 0)
             {
                 bool completed = phase2Director.RegisterDeanCheckSuccess(GetRequiredDeanSuccessCount());
+                AudioManager.PlaySfx(SfxEnum.DiceSuccess);
                 SetText(resultText, completed ? GetDeanWinText() : GetDeanSingleSuccessText());
                 SetContinueVisible(completed);
                 if (!completed)
@@ -479,14 +486,17 @@ namespace UI
                 bool isSuccess = finalValue >= target;
                 string bonusText = resultBonus > 0 ? $"（道具 +{resultBonus}）" : string.Empty;
                 string summary = $"检定结果：{finalValue}{bonusText} / 目标 {target} / {(isSuccess ? "成功" : "失败")}\n\n";
-                if (isSuccess)
-                {
-                    ResolveDeanSuccess(summary);
-                }
-                else
-                {
-                    ResolveDeanFailure(summary);
-                }
+            if (isSuccess)
+            {
+                AudioManager.PlaySfx(SfxEnum.DiceSuccess);
+                ResolveDeanSuccess(summary);
+            }
+            else
+            {
+                AudioManager.PlaySfx(SfxEnum.DiceFail);
+                ResolveDeanFailure(summary);
+            }
+
             });
         }
 

@@ -110,11 +110,13 @@ namespace UI
             {
                 int roll = UnityEngine.Random.Range(1, 7);
                 bool success = IsCheckSuccessful(roll, choice.check);
+                AudioManager.PlaySfx(success ? SfxEnum.DiceSuccess : SfxEnum.DiceFail);
                 outcome = success ? choice.successOutcome : choice.failureOutcome;
                 checkSummary = $"Roll: {roll} / {FormatCheck(choice.check)} / {(success ? "Success" : "Failure")}\n\n";
             }
 
             ApplyOutcomeEffects(outcome);
+            AudioManager.PlaySfx(SfxEnum.ButtonClick);
             SetText(resultText, checkSummary + FormatOutcome(outcome));
             SetContinueVisible(true);
         }
@@ -142,6 +144,7 @@ namespace UI
                     if (playerInventory != null && effect.itemData != null)
                     {
                         playerInventory.AddItem(effect.itemData, effect.itemAmount);
+                        AudioManager.PlaySfx(SfxEnum.DrawCard);
                     }
                 }
             }
@@ -180,6 +183,8 @@ namespace UI
 
         private void FinishEvent()
         {
+            AudioManager.PlaySfx(SfxEnum.ButtonClick);
+
             if (panelRoot != null)
             {
                 panelRoot.SetActive(false);

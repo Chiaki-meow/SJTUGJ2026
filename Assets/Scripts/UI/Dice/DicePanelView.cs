@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Gameplay;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -109,6 +110,7 @@ namespace UI.Dice
             }
 
             diceManager.StartCheck(checkType, diceCount, difficulty, compareRule, allowModifier);
+            AudioManager.PlaySfx(SfxEnum.DiceRoll);
             playRoutine = StartCoroutine(PlayIntroRoutine());
         }
 
@@ -462,6 +464,7 @@ namespace UI.Dice
             if (diceManager == null || hasRerolledAfterDrag)
                 return;
 
+            AudioManager.PlaySfx(SfxEnum.DiceRoll);
             diceManager.RollAllDices();
             hasRerolledAfterDrag = true;
         }

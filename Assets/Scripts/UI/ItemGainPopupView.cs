@@ -21,7 +21,7 @@ namespace UI
             Initialize();
             if (!wasInitialized)
             {
-                Hide();
+                Hide(false);
             }
         }
 
@@ -39,6 +39,8 @@ namespace UI
 
             if (itemData == null)
                 return;
+
+            AudioManager.PlaySfx(SfxEnum.DrawCard);
 
             if (panelRoot != null)
             {
@@ -65,6 +67,16 @@ namespace UI
 
         public void Hide()
         {
+            Hide(true);
+        }
+
+        private void Hide(bool playSound)
+        {
+            if (playSound)
+            {
+                AudioManager.PlaySfx(SfxEnum.ButtonClick);
+            }
+
             if (panelRoot != null)
             {
                 panelRoot.SetActive(false);
