@@ -7,6 +7,8 @@ namespace Gameplay
     {
         public static PlayerStateManager Instance { get; private set; }
 
+        public PlayerInitialStateData initialState;
+
         [SerializeField] private int physical = 3;
         [SerializeField] private int mental = 3;
         [SerializeField] private int maxHealth = 3;
@@ -32,6 +34,7 @@ namespace Gameplay
             }
 
             Instance = this;
+            ApplyInitialState();
             ClampState();
             hasNotifiedDeath = IsDead;
         }
@@ -81,6 +84,11 @@ namespace Gameplay
             if (physical == clampedValue)
                 return;
 
+            if (clampedValue < physical)
+            {
+                AudioManager.PlaySfx(SfxEnum.PhysicalDown);
+            }
+
             physical = clampedValue;
             NotifyStateChanged();
         }
@@ -90,6 +98,11 @@ namespace Gameplay
             int clampedValue = Mathf.Max(0, value);
             if (mental == clampedValue)
                 return;
+
+            if (clampedValue < mental)
+            {
+                AudioManager.PlaySfx(SfxEnum.MentalDown);
+            }
 
             mental = clampedValue;
             NotifyStateChanged();
@@ -133,6 +146,11 @@ namespace Gameplay
             if (health == clampedValue)
                 return;
 
+            if (clampedValue < health)
+            {
+                AudioManager.PlaySfx(SfxEnum.HpDown);
+            }
+
             health = clampedValue;
             NotifyStateChanged();
             CheckDeath();
@@ -146,6 +164,31 @@ namespace Gameplay
             health = maxHealth;
             hasNotifiedDeath = false;
             NotifyStateChanged();
+        }
+
+        public void ResetState(PlayerInitialStateData stateData)
+        {
+            if (stateData == null)
+                return;
+
+            physical = Mathf.Max(0, stateData.physical);
+            mental = Mathf.Max(0, stateData.mental);
+            maxHealth = Mathf.Max(1, stateData.maxHealth);
+            health = Mathf.Clamp(stateData.health, 0, maxHealth);
+            hasNotifiedDeath = IsDead;
+            NotifyStateChanged();
+            CheckDeath();
+        }
+
+        private void ApplyInitialState()
+        {
+            if (initialState == null)
+                return;
+
+            physical = initialState.physical;
+            mental = initialState.mental;
+            maxHealth = initialState.maxHealth;
+            health = initialState.health;
         }
 
         private void ClampState()

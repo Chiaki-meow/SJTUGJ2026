@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: patient_diary
   displayName: "\u60A3\u8005\u7684\u65E5\u8BB0"
-  description: "\u8BB0\u5F55\u7740\u60A3\u8005\u7ECF\u5386\u7684\u65E5\u8BB0\u3002\u5171\u60C5\u8DEF\u7EBF\u4E2D\u53EF\u8DF3\u8FC7\u7B2C\u4E00\u6B21\u9662\u957F\u68C0\u5B9A\u3002"
+  description: "\u6301\u6709\u3010\u60A3\u8005\u7684\u9057\u4E66\u3011\u65F6\u53EF\u83B7\u5F97\u7684\u5173\u952E\u8BB0\u5F55\u3002"
   icon: {fileID: 21300000, guid: 1da74e4f9f9414bf2ae866257b468b05, type: 3}
   category: 3
   maxStack: 1

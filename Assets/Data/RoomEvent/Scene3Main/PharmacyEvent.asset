@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe955d3415c8554394aa2715c98ba2a, type: 3}
+  m_Name: PharmacyEvent
+  m_EditorClassIdentifier: 
+  eventName: "\u836F\u623F"
+  category: 1
+  description: "\u8D27\u67B6\u5012\u584C\uFF0C\u4F46\u4ECD\u6709\u4E00\u4E9B\u836F\u76D2\u5B8C\u597D\u65E0\u635F\u3002"
+  choices:
+  - label: "\u62FF\u8D70\u9547\u9759\u836F\u7247"
+    requiresCheck: 0
+    check:
+      stat: 0
+      comparison: 1
+      targetNumber: 1
+    directOutcome:
+      resultText: "\u4F60\u83B7\u5F97\u4E86\u9547\u9759\u836F\u7247\u3002"
+      effects:
+      - effectType: 1
+        stat: 0
+        statDelta: 0
+        itemData: {fileID: 11400000, guid: 4c12ff0ed51359d4090ebecdcf226b20, type: 2}
+        itemName: "\u9547\u9759\u836F\u7247"
+        itemAmount: 1
+    successOutcome:
+      resultText: 
+      effects: []
+    failureOutcome:
+      resultText: 
+      effects: []
+  - label: "\u5BFB\u627E\u533B\u5B66\u8D44\u6599"
+    requiresCheck: 0
+    check:
+      stat: 0
+      comparison: 1
+      targetNumber: 1
+    directOutcome:
+      resultText: "\u4F60\u627E\u5230\u4E00\u672C\u75C5\u7406\u751F\u7406\u5B66\u4E66\u3002"
+      effects:
+      - effectType: 1
+        stat: 0
+        statDelta: 0
+        itemData: {fileID: 11400000, guid: 8a75861e46ac10d429f6989d68271825, type: 2}
+        itemName: "\u75C5\u7406\u751F\u7406\u5B66\u4E66"
+        itemAmount: 1
+    successOutcome:
+      resultText: 
+      effects: []
+    failureOutcome:
+      resultText: 
+      effects: []

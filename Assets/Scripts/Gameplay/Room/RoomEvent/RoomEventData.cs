@@ -26,7 +26,10 @@ namespace Gameplay
     public enum RoomEventEffectType
     {
         StatChange,
-        GainItem
+        GainItem,
+        RevealTruth,
+        TriggerPhase2,
+        GainRandomItem
     }
 
     [CreateAssetMenu(menuName = "Gameplay/Room Event")]
@@ -85,6 +88,7 @@ namespace Gameplay
         public CharacterStat stat;
         public int statDelta;
         public ItemData itemData;
+        public ItemData[] itemPool;
         public string itemName;
         public int itemAmount = 1;
     }

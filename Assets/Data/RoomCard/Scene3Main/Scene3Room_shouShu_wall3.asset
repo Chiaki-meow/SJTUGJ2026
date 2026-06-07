@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34d0142bf3a1f8f4499ffbadfe580dfb, type: 3}
+  m_Name: Scene3Room_shouShu_wall3
+  m_EditorClassIdentifier: 
+  roomName: "\u624B\u672F\u5BA4 3"
+  sprite: {fileID: 21300000, guid: 1c9de880d9c074082ba4833f7c91ec29, type: 3}
+  wallSprite: {fileID: 21300000, guid: f5f20fe4350e941b98f8d5775e2bed09, type: 3}
+  eventData: {fileID: 11400000, guid: 2e2d50676a1428b4e83a65e5859e0d2a, type: 2}
+  doorUp: 1
+  doorLeft: 1
+  doorDown: 1
+  doorRight: 0
+  doorCount: 3

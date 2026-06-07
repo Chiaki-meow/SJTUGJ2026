@@ -407,22 +407,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 85666110}
     m_Modifications:
-    - target: {fileID: 839140076231433427, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 518f08be8e4915840b89709b1ae4e1db, type: 2}
-    - target: {fileID: 839140076231433427, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: -1746326691326461572, guid: 518f08be8e4915840b89709b1ae4e1db, type: 2}
-    - target: {fileID: 839140076231433427, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
-      propertyPath: m_TextStyleHashCode
-      value: -1183493901
-      objectReference: {fileID: 0}
-    - target: {fileID: 839140076231433427, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1791319981450355653, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -506,14 +490,6 @@ PrefabInstance:
     - target: {fileID: 6076396206473617867, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
       propertyPath: m_Name
       value: popDice
-      objectReference: {fileID: 0}
-    - target: {fileID: 8037531133167781655, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4278190080
-      objectReference: {fileID: 0}
-    - target: {fileID: 8037531133167781655, guid: 4197cc251d118ff479b9700b12d4b172, type: 3}
-      propertyPath: m_TextStyleHashCode
-      value: -1183493901
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2130,6 +2106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e37c5ddc90d0767479669a35c3b072f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialState: {fileID: 0}
   physical: 3
   mental: 3
   maxHealth: 3
