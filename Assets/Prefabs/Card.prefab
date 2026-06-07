@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2229142581156918284}
   - component: {fileID: 9189938300616862714}
   - component: {fileID: 5657069024986108358}
-  - component: {fileID: 9103851012121267657}
+  - component: {fileID: 8319829251736620468}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &9103851012121267657
+--- !u!114 &8319829251736620468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,10 +140,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2316281022026469434}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c13ab6218d04cfe901dc71509c4bc2e, type: 3}
+  m_Script: {fileID: 11500000, guid: e8e8fcde6dc330f478b42d8a057643f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 0f8cc39f7f93740debd8d1dd987094dd, type: 2}
+  data: {fileID: 0}
   gridPosition: {x: 0, y: 0}
-  hasExpanded: 0
+  remainingDoors: 0
   hasResolvedEvent: 0

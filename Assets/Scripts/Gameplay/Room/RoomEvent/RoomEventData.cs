@@ -26,7 +26,9 @@ namespace Gameplay
     public enum RoomEventEffectType
     {
         StatChange,
-        GainItem
+        GainItem,
+        RevealTruth,
+        TriggerPhase2
     }
 
     [CreateAssetMenu(menuName = "Gameplay/Room Event")]

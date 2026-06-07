@@ -182,7 +182,34 @@ namespace Gameplay
             if (boardManager == null || deanOfficeRoomCard == null)
                 return;
 
-            boardManager.TryPlaceFixedRoom(deanOfficeRoomCard, deanOfficeGridPosition, out deanOfficeRoom);
+            Vector2Int targetPosition = GetDeanOfficePosition();
+            boardManager.TryPlaceFixedRoom(deanOfficeRoomCard, targetPosition, out deanOfficeRoom);
+        }
+
+        private Vector2Int GetDeanOfficePosition()
+        {
+            if (boardManager == null || phase2TriggerRoom == null)
+                return deanOfficeGridPosition;
+
+            Vector2Int origin = phase2TriggerRoom.gridPosition;
+            Vector2Int[] directions =
+            {
+                Vector2Int.right,
+                Vector2Int.up,
+                Vector2Int.left,
+                Vector2Int.down
+            };
+
+            for (int i = 0; i < directions.Length; i++)
+            {
+                Vector2Int position = origin + directions[i];
+                if (!boardManager.HasRoom(position) && CanConnectToDeanOffice(directions[i]))
+                {
+                    return position;
+                }
+            }
+
+            return deanOfficeGridPosition;
         }
 
         private void HandleRoomResolved(RoomCard room)
@@ -205,6 +232,32 @@ namespace Gameplay
 
             difficultyBonus++;
             OnDifficultyBonusChanged?.Invoke(difficultyBonus);
+        }
+
+        private bool CanConnectToDeanOffice(Vector2Int direction)
+        {
+            return phase2TriggerRoom != null
+                && phase2TriggerRoom.data != null
+                && deanOfficeRoomCard != null
+                && phase2TriggerRoom.data.HasDoor(direction)
+                && deanOfficeRoomCard.HasDoor(GetOppositeDirection(direction));
+        }
+
+        private static Vector2Int GetOppositeDirection(Vector2Int direction)
+        {
+            if (direction == Vector2Int.up)
+                return Vector2Int.down;
+
+            if (direction == Vector2Int.down)
+                return Vector2Int.up;
+
+            if (direction == Vector2Int.left)
+                return Vector2Int.right;
+
+            if (direction == Vector2Int.right)
+                return Vector2Int.left;
+
+            return Vector2Int.zero;
         }
 
         private void ResolveReferences()

@@ -7,6 +7,8 @@ namespace Gameplay
     {
         public static PlayerStateManager Instance { get; private set; }
 
+        public PlayerInitialStateData initialState;
+
         [SerializeField] private int physical = 3;
         [SerializeField] private int mental = 3;
         [SerializeField] private int maxHealth = 3;
@@ -32,6 +34,7 @@ namespace Gameplay
             }
 
             Instance = this;
+            ApplyInitialState();
             ClampState();
             hasNotifiedDeath = IsDead;
         }
@@ -146,6 +149,31 @@ namespace Gameplay
             health = maxHealth;
             hasNotifiedDeath = false;
             NotifyStateChanged();
+        }
+
+        public void ResetState(PlayerInitialStateData stateData)
+        {
+            if (stateData == null)
+                return;
+
+            physical = Mathf.Max(0, stateData.physical);
+            mental = Mathf.Max(0, stateData.mental);
+            maxHealth = Mathf.Max(1, stateData.maxHealth);
+            health = Mathf.Clamp(stateData.health, 0, maxHealth);
+            hasNotifiedDeath = IsDead;
+            NotifyStateChanged();
+            CheckDeath();
+        }
+
+        private void ApplyInitialState()
+        {
+            if (initialState == null)
+                return;
+
+            physical = initialState.physical;
+            mental = initialState.mental;
+            maxHealth = initialState.maxHealth;
+            health = initialState.health;
         }
 
         private void ClampState()

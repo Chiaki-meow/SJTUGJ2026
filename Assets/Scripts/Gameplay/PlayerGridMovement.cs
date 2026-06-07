@@ -7,12 +7,20 @@ namespace Gameplay
         public BoardManager boardManager;
         public InGameManager inGameManager;
         public GameFlowManager gameFlowManager;
+        public RoomSelectionHandler roomSelectionHandler;
         public Vector2Int gridPosition;
         public bool enterStartingRoomOnStart;
         public int playerSortingOrder = 10;
+        public Vector2 uiOrigin;
+        public float uiTileSize = 503f;
+
+        private RectTransform rectTransform;
+        private bool isWaitingForRoomSelection;
+        private readonly System.Collections.Generic.List<RoomCardData> roomChoices = new();
 
         private void Awake()
         {
+            rectTransform = GetComponent<RectTransform>();
             SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
 
             if (spriteRenderer != null)
@@ -38,6 +46,13 @@ namespace Gameplay
                 gameFlowManager = FindObjectOfType<GameFlowManager>();
             }
 
+            if (roomSelectionHandler == null)
+            {
+                roomSelectionHandler = boardManager != null && boardManager.roomSelectionHandler != null
+                    ? boardManager.roomSelectionHandler
+                    : FindObjectOfType<RoomSelectionHandler>(true);
+            }
+
             if (boardManager == null)
             {
                 Debug.LogError("PlayerGridMovement needs a BoardManager in the scene.", this);
@@ -55,6 +70,9 @@ namespace Gameplay
 
         private void Update()
         {
+            if (isWaitingForRoomSelection)
+                return;
+
             if (inGameManager != null && !inGameManager.CanPlayerAct)
                 return;
 
@@ -92,6 +110,20 @@ namespace Gameplay
 
             if (!boardManager.HasRoom(nextPosition))
             {
+                if (!boardManager.CanPlaceRoom(gridPosition, direction, out string failureReason))
+                {
+                    ShowPlacementFailed(failureReason);
+                    return;
+                }
+
+                if (roomSelectionHandler != null && boardManager.GetRoomChoices(roomChoices, boardManager.roomChoiceCount, gridPosition, direction) > 0)
+                {
+                    isWaitingForRoomSelection = true;
+                    Vector2Int selectedDirection = direction;
+                    roomSelectionHandler.ShowRoomSelection(roomChoices, selectedCard => HandleRoomSelected(selectedDirection, selectedCard));
+                    return;
+                }
+
                 if (!boardManager.TryDrawAndPlaceRoom(gridPosition, direction, out RoomCard placedRoom))
                     return;
 
@@ -101,6 +133,36 @@ namespace Gameplay
             gridPosition = nextPosition;
             SnapToGridPosition();
             EnterCurrentRoom();
+        }
+
+        private void HandleRoomSelected(Vector2Int direction, RoomCardData selectedCard)
+        {
+            isWaitingForRoomSelection = false;
+
+            if (selectedCard == null)
+                return;
+
+            if (inGameManager != null && !inGameManager.CanPlayerAct)
+                return;
+
+            if (!boardManager.TryPlaceSelectedRoom(gridPosition, direction, selectedCard, out RoomCard placedRoom))
+            {
+                ShowPlacementFailed("选择的房间无法与当前门对齐。");
+                return;
+            }
+
+            gridPosition = placedRoom.gridPosition;
+            SnapToGridPosition();
+            EnterCurrentRoom();
+        }
+
+        private void ShowPlacementFailed(string message)
+        {
+            if (roomSelectionHandler != null)
+            {
+                isWaitingForRoomSelection = true;
+                roomSelectionHandler.ShowPlacementFailed(message, () => isWaitingForRoomSelection = false);
+            }
         }
 
         private void EnterCurrentRoom()
@@ -125,6 +187,14 @@ namespace Gameplay
 
         private void SnapToGridPosition()
         {
+            if (rectTransform != null)
+            {
+                rectTransform.anchoredPosition = boardManager != null
+                    ? boardManager.GridToUiAnchoredPosition(gridPosition)
+                    : uiOrigin + new Vector2(gridPosition.x * uiTileSize, gridPosition.y * uiTileSize);
+                return;
+            }
+
             transform.position = boardManager.GridToWorldPosition(gridPosition);
         }
     }

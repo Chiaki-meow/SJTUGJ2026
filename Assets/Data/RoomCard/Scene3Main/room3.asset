@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34d0142bf3a1f8f4499ffbadfe580dfb, type: 3}
+  m_Name: room3
+  m_EditorClassIdentifier: 
+  roomName: "\u623F\u95F4 3"
+  sprite: {fileID: 21300000, guid: 759663865c4a51547a6b184af8d27378, type: 3}
+  eventData: {fileID: 11400000, guid: 599e276a310ca9a41af858a72934e182, type: 2}
+  doorCount: 2
