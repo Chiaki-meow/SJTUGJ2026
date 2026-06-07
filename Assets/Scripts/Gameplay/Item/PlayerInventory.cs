@@ -12,6 +12,8 @@ namespace Gameplay
 
         public IReadOnlyList<ItemModel> Items => items;
 
+        public event Action OnInventoryChanged;
+
         private void Awake()
         {
             for (int i = 0; i < startingItems.Count; i++)
@@ -62,6 +64,11 @@ namespace Gameplay
                 }
             }
 
+            if (firstChangedItem != null)
+            {
+                OnInventoryChanged?.Invoke();
+            }
+
             return firstChangedItem;
         }
 
@@ -90,6 +97,7 @@ namespace Gameplay
                 }
             }
 
+            OnInventoryChanged?.Invoke();
             return true;
         }
 
@@ -113,6 +121,11 @@ namespace Gameplay
             if (item.IsEmpty)
             {
                 items.Remove(item);
+            }
+
+            if (used)
+            {
+                OnInventoryChanged?.Invoke();
             }
 
             return used;
