@@ -12,52 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe955d3415c8554394aa2715c98ba2a, type: 3}
   m_Name: OperatingRoomEvent
   m_EditorClassIdentifier: 
-  eventName: "\u5E9F\u5F03\u624B\u672F\u5BA4"
-  category: 2
-  description: "\u624B\u672F\u53F0\u4E0A\u6B8B\u7559\u7740\u65B0\u9C9C\u8840\u8FF9\uFF0C\u67D0\u4E2A\u62BD\u5C49\u6B63\u5728\u8F7B\u8F7B\u9707\u52A8\u3002"
+  eventName: "\u624B\u672F\u5BA4"
+  category: 1
+  description: "\u523A\u773C\u7684\u65E0\u5F71\u706F\u76F4\u76F4\u5730\u6253\u5728\u7A7A\u8361\u8361\u7684\u624B\u672F\u53F0\u4E0A\uFF0C\u4E00\u65C1\u7684\u91D1\u5C5E\u6258\u76D8\u91CC\u6B8B\u7559\u7740\u672A\u6E05\u7406\u7684\u6C61\u79FD\u3002"
   choices:
-  - label: "\u6253\u5F00\u62BD\u5C49"
-    requiresCheck: 1
-    check:
-      stat: 0
-      comparison: 1
-      targetNumber: 3
-    directOutcome:
-      resultText: 
-      effects: []
-    successOutcome:
-      resultText: "\u4F60\u538B\u4F4F\u62BD\u5C49\uFF0C\u53D6\u51FA\u4E86\u67D3\u8840\u7684\u624B\u672F\u5200\u3002"
-      effects:
-      - effectType: 1
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 11400000, guid: 8db8aec95a1f7c2498984b86d7b1dbb8, type: 2}
-        itemName: "\u67D3\u8840\u7684\u624B\u672F\u5200"
-        itemAmount: 1
-      - effectType: 3
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 0}
-        itemName: 
-        itemAmount: 1
-    failureOutcome:
-      resultText: "\u62BD\u5C49\u731B\u5730\u5F39\u5F00\uFF0C\u4F60\u88AB\u5212\u4F24\u4E86\u3002"
-      effects:
-      - effectType: 0
-        stat: 2
-        statDelta: -1
-        itemData: {fileID: 0}
-        itemName: 
-        itemAmount: 1
-  - label: "\u4E0D\u8981\u78B0\u5B83"
+  - label: "\u68C0\u67E5\u91D1\u5C5E\u6258\u76D8"
     requiresCheck: 0
     check:
       stat: 0
       comparison: 1
       targetNumber: 1
     directOutcome:
-      resultText: "\u4F60\u7ED5\u5F00\u624B\u672F\u53F0\uFF0C\u5C3D\u91CF\u4E0D\u53BB\u770B\u90A3\u4E9B\u8840\u8FF9\u3002"
-      effects: []
+      resultText: "\u4F60\u5728\u6258\u76D8\u5E95\u90E8\u627E\u5230\u4E86\u4E00\u4EF6\u8FD8\u80FD\u6D3E\u4E0A\u7528\u573A\u7684\u4E1C\u897F\u3002\u83B7\u5F97\u968F\u673A\u7269\u54C1\u3002"
+      effects:
+      - effectType: 4
+        stat: 0
+        statDelta: 0
+        itemData: {fileID: 0}
+        itemPool:
+        - {fileID: 11400000, guid: 8a75861e46ac10d429f6989d68271825, type: 2}
+        - {fileID: 11400000, guid: 4c12ff0ed51359d4090ebecdcf226b20, type: 2}
+        - {fileID: 11400000, guid: f17986ba35a75564c8c526b52cec2e15, type: 2}
+        - {fileID: 11400000, guid: 8db8aec95a1f7c2498984b86d7b1dbb8, type: 2}
+        - {fileID: 11400000, guid: 8b0a4ce1b163ecf459a2495f16b50a20, type: 2}
+        itemName: "\u968F\u673A\u7269\u54C1"
+        itemAmount: 1
     successOutcome:
       resultText: 
       effects: []

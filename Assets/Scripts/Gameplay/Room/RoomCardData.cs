@@ -13,20 +13,19 @@ namespace Gameplay
         public bool doorLeft;
         public bool doorDown;
         public bool doorRight;
+        public bool useFixedDoorLayout;
 
         [Range(1, 4)]
         public int doorCount = 1;
 
         private void OnValidate()
         {
-            int count = GetDoorCount();
-            if (count == 0)
-            {
-                doorUp = true;
-                count = 1;
-            }
+            doorCount = Mathf.Clamp(doorCount, 1, 4);
 
-            doorCount = Mathf.Clamp(count, 1, 4);
+            if (GetDoorCount() == 0)
+            {
+                ApplyDefaultDoorTemplate();
+            }
 
             if (string.IsNullOrWhiteSpace(roomName))
             {
@@ -63,6 +62,22 @@ namespace Gameplay
             if (doorRight)
                 count++;
             return count;
+        }
+
+        public void ApplyDoorLayout(RoomDoorLayout layout)
+        {
+            doorUp = layout.up;
+            doorLeft = layout.left;
+            doorDown = layout.down;
+            doorRight = layout.right;
+        }
+
+        private void ApplyDefaultDoorTemplate()
+        {
+            doorUp = true;
+            doorLeft = doorCount >= 2;
+            doorDown = doorCount >= 3;
+            doorRight = doorCount >= 4;
         }
 
 #if UNITY_EDITOR

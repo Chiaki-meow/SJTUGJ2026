@@ -26,7 +26,7 @@ namespace Gameplay
 
         [Header("Key Content")]
         public RoomCardData deanOfficeRoomCard;
-        public Vector2Int deanOfficeGridPosition = new Vector2Int(3, 3);
+        public Vector2Int deanOfficeGridPosition = new Vector2Int(4, 4);
         public ItemData bloodyKnifeItem;
         public ItemData patientLetterItem;
         public ItemData patientDiaryItem;
@@ -182,34 +182,45 @@ namespace Gameplay
             if (boardManager == null || deanOfficeRoomCard == null)
                 return;
 
-            Vector2Int targetPosition = GetDeanOfficePosition();
-            boardManager.TryPlaceFixedRoom(deanOfficeRoomCard, targetPosition, out deanOfficeRoom);
+            Vector2Int targetPosition = GetDeanOfficePosition(out Vector2Int entranceDirection);
+            if (entranceDirection != Vector2Int.zero)
+            {
+                boardManager.TryPlaceFixedRoom(deanOfficeRoomCard, targetPosition, entranceDirection, out deanOfficeRoom);
+            }
+            else
+            {
+                boardManager.TryPlaceFixedRoom(deanOfficeRoomCard, targetPosition, out deanOfficeRoom);
+            }
         }
 
-        private Vector2Int GetDeanOfficePosition()
+        private Vector2Int GetDeanOfficePosition(out Vector2Int entranceDirection)
         {
-            if (boardManager == null || phase2TriggerRoom == null)
+            entranceDirection = Vector2Int.zero;
+            if (boardManager == null)
                 return deanOfficeGridPosition;
 
-            Vector2Int origin = phase2TriggerRoom.gridPosition;
-            Vector2Int[] directions =
+            foreach (RoomCard room in boardManager.PlacedRooms)
             {
-                Vector2Int.right,
-                Vector2Int.up,
-                Vector2Int.left,
-                Vector2Int.down
-            };
+                if (room == null)
+                    continue;
 
-            for (int i = 0; i < directions.Length; i++)
-            {
-                Vector2Int position = origin + directions[i];
-                if (!boardManager.HasRoom(position) && CanConnectToDeanOffice(directions[i]))
+                Vector2Int direction = deanOfficeGridPosition - room.gridPosition;
+                if (IsCardinalDirection(direction) && room.HasDoor(direction))
                 {
-                    return position;
+                    entranceDirection = direction;
+                    break;
                 }
             }
 
             return deanOfficeGridPosition;
+        }
+
+        private static bool IsCardinalDirection(Vector2Int direction)
+        {
+            return direction == Vector2Int.up
+                || direction == Vector2Int.down
+                || direction == Vector2Int.left
+                || direction == Vector2Int.right;
         }
 
         private void HandleRoomResolved(RoomCard room)
@@ -239,8 +250,8 @@ namespace Gameplay
             return phase2TriggerRoom != null
                 && phase2TriggerRoom.data != null
                 && deanOfficeRoomCard != null
-                && phase2TriggerRoom.data.HasDoor(direction)
-                && deanOfficeRoomCard.HasDoor(GetOppositeDirection(direction));
+                && phase2TriggerRoom.HasDoor(direction)
+                && deanOfficeRoomCard.doorCount > 0;
         }
 
         private static Vector2Int GetOppositeDirection(Vector2Int direction)

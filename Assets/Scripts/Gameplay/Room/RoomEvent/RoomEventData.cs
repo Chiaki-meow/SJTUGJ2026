@@ -28,7 +28,8 @@ namespace Gameplay
         StatChange,
         GainItem,
         RevealTruth,
-        TriggerPhase2
+        TriggerPhase2,
+        GainRandomItem
     }
 
     [CreateAssetMenu(menuName = "Gameplay/Room Event")]
@@ -87,6 +88,7 @@ namespace Gameplay
         public CharacterStat stat;
         public int statDelta;
         public ItemData itemData;
+        public ItemData[] itemPool;
         public string itemName;
         public int itemAmount = 1;
     }

@@ -12,70 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe955d3415c8554394aa2715c98ba2a, type: 3}
   m_Name: PatientRoomEvent
   m_EditorClassIdentifier: 
-  eventName: "\u75C5\u60A3\u623F\u95F4"
+  eventName: "\u592A\u5E73\u95F4"
   category: 2
-  description: "\u5E8A\u5934\u67DC\u91CC\u538B\u7740\u4E00\u5C01\u6CA1\u6709\u5BC4\u51FA\u7684\u4FE1\u3002"
+  description: "\u63A8\u5F00\u539A\u91CD\u7684\u94C1\u95E8\uFF0C\u51B0\u51B7\u7684\u7A7A\u6C14\u88F9\u631F\u7740\u798F\u5C14\u9A6C\u6797\u7684\u6C14\u606F\u6251\u9762\u800C\u6765\u3002\u4E00\u6392\u6392\u4E0D\u9508\u94A2\u5B58\u653E\u67DC\u5728\u60E8\u767D\u7684\u706F\u5149\u4E0B\u6CDB\u7740\u51B7\u5149\uFF0C\u6709\u51E0\u4E2A\u67DC\u95E8\u5FAE\u5FAE\u655E\u5F00\uFF0C\u91CC\u9762\u7684\u4E1C\u897F\u65E9\u5DF2\u4E0D\u89C1\u8E2A\u5F71\uFF0C\u53EA\u7559\u4E0B\u51E0\u7247\u53D1\u9ED1\u7684\u6807\u7B7E\u548C\u6563\u843D\u7684\u7EF7\u5E26\u3002"
   choices:
-  - label: "\u8BFB\u5B8C\u8FD9\u5C01\u4FE1"
-    requiresCheck: 1
+  - label: "\u8BB0\u5F55\u8FD9\u6BB5\u9884\u5146"
+    requiresCheck: 0
     check:
       stat: 1
       comparison: 1
-      targetNumber: 3
-    directOutcome:
-      resultText: 
-      effects: []
-    successOutcome:
-      resultText: "\u4F60\u7406\u89E3\u4E86\u4FE1\u4E2D\u7684\u7EBF\u7D22\uFF0C\u83B7\u5F97\u60A3\u8005\u7684\u9057\u4E66\u3002"
-      effects:
-      - effectType: 1
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 11400000, guid: 8b0a4ce1b163ecf459a2495f16b50a20, type: 2}
-        itemName: "\u60A3\u8005\u7684\u9057\u4E66"
-        itemAmount: 1
-      - effectType: 3
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 0}
-        itemName: 
-        itemAmount: 1
-    failureOutcome:
-      resultText: "\u5B57\u53E5\u8BA9\u4F60\u5934\u75DB\u6B32\u88C2\uFF0C\u4F46\u4F60\u8FD8\u662F\u6536\u8D77\u4E86\u4FE1\u3002"
-      effects:
-      - effectType: 0
-        stat: 1
-        statDelta: -1
-        itemData: {fileID: 0}
-        itemName: 
-        itemAmount: 1
-      - effectType: 1
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 11400000, guid: 8b0a4ce1b163ecf459a2495f16b50a20, type: 2}
-        itemName: "\u60A3\u8005\u7684\u9057\u4E66"
-        itemAmount: 1
-      - effectType: 3
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 0}
-        itemName: 
-        itemAmount: 1
-  - label: "\u7FFB\u627E\u67DC\u5B50"
-    requiresCheck: 0
-    check:
-      stat: 0
-      comparison: 1
       targetNumber: 1
     directOutcome:
-      resultText: "\u4F60\u627E\u5230\u4E00\u672C\u88AB\u53CD\u590D\u9605\u8BFB\u7684\u65E5\u8BB0\u3002"
-      effects:
-      - effectType: 1
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 11400000, guid: d9e548b5ba3c4c643a916a7438a6dc45, type: 2}
-        itemName: "\u60A3\u8005\u7684\u65E5\u8BB0"
-        itemAmount: 1
+      resultText: "\u4F60\u8BB0\u4E0B\u4E86\u592A\u5E73\u95F4\u91CC\u4E0D\u81EA\u7136\u7684\u7A7A\u67DC\u3002\u9884\u5146\u52A0\u6DF1\u4E86\u3002"
+      effects: []
     successOutcome:
       resultText: 
       effects: []

@@ -14,15 +14,23 @@ namespace UI
         {
             public GameObject root;
             public Button button;
+            public Image choiceImage;
             public TMP_Text labelText;
             public GameObject judgeRoot;
             public TMP_Text judgeText;
+            public Image judgeIconImage;
+            public Image judgeSignImage;
         }
 
         public GameObject panelRoot;
         public TMP_Text titleText;
         public TMP_Text descriptionText;
         public TMP_Text resultText;
+        public Image eventImage;
+        public Sprite physicalJudgeSprite;
+        public Sprite mentalJudgeSprite;
+        public Sprite greaterJudgeSprite;
+        public Sprite lessJudgeSprite;
         public ChoiceSlot[] choiceSlots;
         public Button continueButton;
         public DicePanelView dicePanelView;
@@ -32,6 +40,8 @@ namespace UI
         public InGameManager inGameManager;
         public Phase2Director phase2Director;
         public DeanBossEncounterData deanBossEncounterData;
+        public ItemData mentalExtraDiceItem;
+        public ItemData physicalCheckBonusItem;
 
         private Action onFinished;
         private RoomCard activeRoom;
@@ -82,6 +92,8 @@ namespace UI
                 panelRoot.SetActive(true);
             }
 
+            RefreshEventImage(room);
+
             if (isDeanEncounter)
             {
                 ShowDeanEncounterIntro();
@@ -115,6 +127,8 @@ namespace UI
                 ChoiceSlot slot = choiceSlots[i];
                 if (slot == null)
                     continue;
+
+                BindChoiceSlotReferences(slot);
 
                 if (slot.button == null && slot.root != null)
                 {
@@ -155,6 +169,7 @@ namespace UI
                 if (slot == null)
                     continue;
 
+                BindChoiceSlotReferences(slot);
                 bool hasChoice = i < choiceCount && eventData.choices[i] != null;
 
                 if (slot.root != null)
@@ -167,13 +182,14 @@ namespace UI
 
                 RoomEventChoiceData choice = eventData.choices[i];
                 SetText(slot.labelText, choice.label);
+                RefreshChoiceImage(slot);
 
                 if (slot.judgeRoot != null)
                 {
                     slot.judgeRoot.SetActive(choice.requiresCheck);
                 }
 
-                SetText(slot.judgeText, choice.requiresCheck ? FormatCheck(choice.check) : string.Empty);
+                RefreshJudgeVisuals(slot, choice.check, choice.requiresCheck);
 
                 if (slot.button != null)
                 {
@@ -227,14 +243,23 @@ namespace UI
             }
 
             int diceCount = Mathf.Max(0, playerStateManager != null ? playerStateManager.GetStatValue(check.stat) : 0);
+            if (check.stat == CharacterStat.Mental && HasItem(mentalExtraDiceItem))
+            {
+                diceCount++;
+            }
+
+            int resultBonus = check.stat == CharacterStat.Physical && HasItem(physicalCheckBonusItem) ? 1 : 0;
             DiceCheckType checkType = ToDiceCheckType(check.stat);
             DiceCompareRule compareRule = check.comparison == DiceComparison.GreaterThan ? DiceCompareRule.GreaterOrEqual : DiceCompareRule.GreaterOrEqual;
             int difficulty = check.comparison == DiceComparison.GreaterThan ? check.targetNumber + 1 : check.targetNumber;
 
             dicePanelView.PlayCheck(checkType, diceCount, difficulty, compareRule, false, result =>
             {
-                RoomEventOutcomeData outcome = result.isSuccess ? choice.successOutcome : choice.failureOutcome;
-                string summary = $"检定结果：{result.finalTotalValue} / 目标 {difficulty} / {(result.isSuccess ? "成功" : "失败")}\n\n";
+                int finalValue = result.finalTotalValue + resultBonus;
+                bool isSuccess = finalValue >= difficulty;
+                RoomEventOutcomeData outcome = isSuccess ? choice.successOutcome : choice.failureOutcome;
+                string bonusText = resultBonus > 0 ? $"（道具 +{resultBonus}）" : string.Empty;
+                string summary = $"检定结果：{finalValue}{bonusText} / 目标 {difficulty} / {(isSuccess ? "成功" : "失败")}\n\n";
                 ResolveOutcome(outcome, summary);
             });
         }
@@ -275,6 +300,18 @@ namespace UI
                         }
                     }
                 }
+                else if (effect.effectType == RoomEventEffectType.GainRandomItem)
+                {
+                    ItemData itemData = GetRandomItem(effect.itemPool);
+                    if (playerInventory != null && itemData != null)
+                    {
+                        playerInventory.AddItem(itemData, effect.itemAmount);
+                        if (itemGainPopup != null)
+                        {
+                            itemGainPopup.Show(itemData, effect.itemAmount);
+                        }
+                    }
+                }
                 else if (effect.effectType == RoomEventEffectType.RevealTruth)
                 {
                     if (inGameManager != null)
@@ -290,6 +327,27 @@ namespace UI
                     }
                 }
             }
+        }
+
+        private ItemData GetRandomItem(ItemData[] itemPool)
+        {
+            if (itemPool == null || itemPool.Length == 0)
+                return null;
+
+            int startIndex = UnityEngine.Random.Range(0, itemPool.Length);
+            for (int i = 0; i < itemPool.Length; i++)
+            {
+                ItemData itemData = itemPool[(startIndex + i) % itemPool.Length];
+                if (itemData != null)
+                    return itemData;
+            }
+
+            return null;
+        }
+
+        private bool HasItem(ItemData itemData)
+        {
+            return playerInventory != null && itemData != null && playerInventory.Contains(itemData);
         }
 
         private void FinishEvent()
@@ -352,6 +410,7 @@ namespace UI
                 if (slot == null)
                     continue;
 
+                BindChoiceSlotReferences(slot);
                 bool isPrimary = i == 0;
                 if (slot.root != null)
                 {
@@ -362,13 +421,15 @@ namespace UI
                     continue;
 
                 SetText(slot.labelText, phase2Director != null && phase2Director.CurrentRoute == Phase2Route.PatientLetter ? "说服院长" : "对抗院长");
+                RefreshChoiceImage(slot);
 
                 if (slot.judgeRoot != null)
                 {
                     slot.judgeRoot.SetActive(true);
                 }
 
-                SetText(slot.judgeText, FormatDeanCheck());
+                CharacterStat stat = phase2Director != null && phase2Director.CurrentRoute == Phase2Route.PatientLetter ? CharacterStat.Mental : CharacterStat.Physical;
+                RefreshJudgeVisuals(slot, stat, DiceComparison.GreaterThanOrEqual, phase2Director != null ? phase2Director.GetCheckTarget(GetDeanBaseTarget()) : 0, true);
 
                 if (slot.button != null)
                 {
@@ -404,12 +465,21 @@ namespace UI
 
             CharacterStat stat = phase2Director.CurrentRoute == Phase2Route.PatientLetter ? CharacterStat.Mental : CharacterStat.Physical;
             int diceCount = Mathf.Max(0, playerStateManager != null ? playerStateManager.GetStatValue(stat) : 0);
+            if (stat == CharacterStat.Mental && HasItem(mentalExtraDiceItem))
+            {
+                diceCount++;
+            }
+
+            int resultBonus = stat == CharacterStat.Physical && HasItem(physicalCheckBonusItem) ? 1 : 0;
             int target = phase2Director.GetCheckTarget(GetDeanBaseTarget());
 
             dicePanelView.PlayCheck(ToDiceCheckType(stat), diceCount, target, DiceCompareRule.GreaterOrEqual, false, result =>
             {
-                string summary = $"检定结果：{result.finalTotalValue} / 目标 {target} / {(result.isSuccess ? "成功" : "失败")}\n\n";
-                if (result.isSuccess)
+                int finalValue = result.finalTotalValue + resultBonus;
+                bool isSuccess = finalValue >= target;
+                string bonusText = resultBonus > 0 ? $"（道具 +{resultBonus}）" : string.Empty;
+                string summary = $"检定结果：{finalValue}{bonusText} / 目标 {target} / {(isSuccess ? "成功" : "失败")}\n\n";
+                if (isSuccess)
                 {
                     ResolveDeanSuccess(summary);
                 }
@@ -547,6 +617,125 @@ namespace UI
             }
         }
 
+        private void RefreshEventImage(RoomCard room)
+        {
+            if (eventImage == null && panelRoot != null)
+            {
+                eventImage = GetChildImage(panelRoot.transform, "eventImage");
+            }
+
+            if (eventImage == null)
+                return;
+
+            Sprite sprite = room != null && room.data != null ? room.data.sprite : null;
+            eventImage.sprite = sprite;
+            eventImage.enabled = sprite != null;
+            eventImage.preserveAspect = true;
+        }
+
+        private void RefreshChoiceImage(ChoiceSlot slot)
+        {
+            if (slot == null)
+                return;
+
+            BindChoiceSlotReferences(slot);
+
+            if (slot.choiceImage == null)
+                return;
+
+            Sprite sprite = activeRoom != null && activeRoom.data != null ? activeRoom.data.sprite : null;
+            if (sprite != null)
+            {
+                slot.choiceImage.sprite = sprite;
+                slot.choiceImage.enabled = true;
+                slot.choiceImage.preserveAspect = true;
+            }
+        }
+
+        private void RefreshJudgeVisuals(ChoiceSlot slot, RoomEventCheckData check, bool isVisible)
+        {
+            if (check == null)
+            {
+                RefreshJudgeVisuals(slot, CharacterStat.Physical, DiceComparison.GreaterThanOrEqual, 0, false);
+                return;
+            }
+
+            RefreshJudgeVisuals(slot, check.stat, check.comparison, check.targetNumber, isVisible);
+        }
+
+        private void RefreshJudgeVisuals(ChoiceSlot slot, CharacterStat stat, DiceComparison comparison, int targetNumber, bool isVisible)
+        {
+            if (slot == null)
+                return;
+
+            BindChoiceSlotReferences(slot);
+            SetText(slot.judgeText, isVisible ? targetNumber.ToString() : string.Empty);
+
+            if (slot.judgeIconImage != null)
+            {
+                slot.judgeIconImage.sprite = stat == CharacterStat.Mental ? mentalJudgeSprite : physicalJudgeSprite;
+                slot.judgeIconImage.enabled = isVisible && slot.judgeIconImage.sprite != null;
+                slot.judgeIconImage.preserveAspect = true;
+            }
+
+            if (slot.judgeSignImage != null)
+            {
+                slot.judgeSignImage.sprite = comparison == DiceComparison.GreaterThan ? greaterJudgeSprite : greaterJudgeSprite;
+                slot.judgeSignImage.enabled = isVisible && slot.judgeSignImage.sprite != null;
+                slot.judgeSignImage.preserveAspect = true;
+            }
+        }
+
+        private void BindChoiceSlotReferences(ChoiceSlot slot)
+        {
+            if (slot == null || slot.root == null)
+                return;
+
+            Transform rootTransform = slot.root.transform;
+            Transform next = rootTransform.Find("next");
+            if (next != null)
+            {
+                slot.choiceImage = next.GetComponent<Image>();
+                slot.button = next.GetComponent<Button>();
+                if (slot.button == null)
+                {
+                    slot.button = next.gameObject.AddComponent<Button>();
+                }
+            }
+
+            if (slot.judgeRoot == null)
+            {
+                Transform judge = rootTransform.Find("judge");
+                slot.judgeRoot = judge != null ? judge.gameObject : null;
+            }
+
+            Transform judgeTransform = slot.judgeRoot != null ? slot.judgeRoot.transform : null;
+            if (judgeTransform == null)
+                return;
+
+            if (slot.judgeText == null)
+            {
+                Transform judgeNum = judgeTransform.Find("judgeNum");
+                slot.judgeText = judgeNum != null ? judgeNum.GetComponent<TMP_Text>() : null;
+            }
+
+            if (slot.judgeIconImage == null)
+            {
+                slot.judgeIconImage = GetChildImage(judgeTransform, "judgeIcon");
+            }
+
+            if (slot.judgeSignImage == null)
+            {
+                slot.judgeSignImage = GetChildImage(judgeTransform, "juedgeSign");
+            }
+        }
+
+        private static Image GetChildImage(Transform root, string childName)
+        {
+            Transform child = root != null ? root.Find(childName) : null;
+            return child != null ? child.GetComponent<Image>() : null;
+        }
+
         private void HidePanel()
         {
             if (panelRoot != null)
@@ -581,8 +770,7 @@ namespace UI
             if (check == null)
                 return "无需检定";
 
-            string comparison = check.comparison == DiceComparison.GreaterThan ? ">" : ">=";
-            return $"{check.stat} {comparison} {check.targetNumber}";
+            return check.targetNumber.ToString();
         }
 
         private static string FormatOutcome(RoomEventOutcomeData outcome)

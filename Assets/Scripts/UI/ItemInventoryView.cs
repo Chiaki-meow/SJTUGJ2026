@@ -133,11 +133,13 @@ namespace UI
                 return;
 
             ItemUseContext context = CreateUseContext();
-            inventory.UseItem(selectedItem, context, out string message);
+            bool used = inventory.UseItem(selectedItem, context, out string message);
 
-            if (useDescriptionText != null && !string.IsNullOrWhiteSpace(message))
+            if (useDescriptionText != null)
             {
-                useDescriptionText.text = message;
+                useDescriptionText.text = string.IsNullOrWhiteSpace(message)
+                    ? (used ? "已使用。" : FormatCannotUseReason(selectedItem, context))
+                    : message;
             }
 
             Refresh();
@@ -191,7 +193,7 @@ namespace UI
             if (useButton == null)
                 return;
 
-            useButton.interactable = selectedItem != null && selectedItem.CanUse(context);
+            useButton.interactable = selectedItem != null;
         }
 
         private ItemUseContext CreateUseContext()
@@ -227,11 +229,16 @@ namespace UI
 
             if (!item.CanUse(CreateUseContext()))
             {
-                string reason = data.effect != null ? data.effect.GetCannotUseReason(item, CreateUseContext()) : "该物品不能主动使用。";
-                description += $"\n{reason}";
+                description += $"\n{FormatCannotUseReason(item, CreateUseContext())}";
             }
 
             return description;
+        }
+
+        private static string FormatCannotUseReason(ItemModel item, ItemUseContext context)
+        {
+            ItemData data = item != null ? item.Data : null;
+            return data != null && data.effect != null ? data.effect.GetCannotUseReason(item, context) : "该物品不能主动使用。";
         }
 
         private bool ContainsItem(ItemModel item)

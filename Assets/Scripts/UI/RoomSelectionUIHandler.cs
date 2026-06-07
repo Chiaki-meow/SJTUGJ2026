@@ -24,10 +24,11 @@ namespace UI
         public Button closeButton;
         public string roomInfoFormat = "门：{0}";
 
-        private Action<RoomCardData> selectedCallback;
+        private Action<RoomPlacementOption> selectedCallback;
         private Action placementFailedDismissedCallback;
-        private readonly List<RoomCardData> currentChoices = new();
+        private readonly List<RoomPlacementOption> currentChoices = new();
         private bool initialized;
+        private bool isRotationMode;
 
         public override bool IsSelecting => panelRoot != null && panelRoot.activeSelf;
 
@@ -46,11 +47,12 @@ namespace UI
             RemoveListeners();
         }
 
-        public override void ShowRoomSelection(IReadOnlyList<RoomCardData> choices, Action<RoomCardData> callback)
+        public override void ShowRoomSelection(IReadOnlyList<RoomPlacementOption> choices, Action<RoomPlacementOption> callback)
         {
             Initialize();
             selectedCallback = callback;
             placementFailedDismissedCallback = null;
+            isRotationMode = false;
             currentChoices.Clear();
 
             if (choices != null)
@@ -72,11 +74,42 @@ namespace UI
             }
         }
 
+        public override void ShowRoomRotation(RoomPlacementOption selectedOption, Vector2Int requiredDoor, Action<RoomPlacementOption> callback)
+        {
+            Initialize();
+            selectedCallback = callback;
+            placementFailedDismissedCallback = null;
+            isRotationMode = true;
+            currentChoices.Clear();
+
+            if (selectedOption != null && selectedOption.data != null)
+            {
+                RoomDoorLayout layout = selectedOption.doorLayout;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (layout.HasDoor(requiredDoor) && !ContainsLayout(layout))
+                    {
+                        currentChoices.Add(selectedOption.WithDoorLayout(layout));
+                    }
+
+                    layout = layout.RotatedClockwise();
+                }
+            }
+
+            RefreshSlots();
+
+            if (panelRoot != null)
+            {
+                panelRoot.SetActive(true);
+            }
+        }
+
         public override void ShowPlacementFailed(string message, Action dismissedCallback)
         {
             Initialize();
             selectedCallback = null;
             placementFailedDismissedCallback = dismissedCallback;
+            isRotationMode = false;
             currentChoices.Clear();
 
             if (slots != null)
@@ -202,7 +235,8 @@ namespace UI
                     continue;
 
                 bool hasChoice = i < currentChoices.Count && currentChoices[i] != null;
-                RoomCardData data = hasChoice ? currentChoices[i] : null;
+                RoomPlacementOption option = hasChoice ? currentChoices[i] : null;
+                RoomCardData data = option != null ? option.data : null;
 
                 if (slot.root != null)
                 {
@@ -221,13 +255,15 @@ namespace UI
 
                 if (slot.roomNameText != null)
                 {
-                    slot.roomNameText.text = data.roomName;
+                    slot.roomNameText.text = isRotationMode ? $"{data.roomName} 朝向{i + 1}" : data.roomName;
                 }
 
                 if (slot.roomInfoText != null)
                 {
-                    slot.roomInfoText.text = string.Format(roomInfoFormat, data.doorCount);
+                    slot.roomInfoText.text = isRotationMode ? "点击确认放置" : string.Format(roomInfoFormat, option.DoorCount);
                 }
+
+                RefreshDoorImages(slot.root, option);
 
                 if (slot.button != null)
                 {
@@ -236,14 +272,49 @@ namespace UI
             }
         }
 
+        private void RefreshDoorImages(GameObject root, RoomPlacementOption option)
+        {
+            if (root == null || option == null)
+                return;
+
+            SetDoorImage(root, "link1", option.HasDoor(Vector2Int.up));
+            SetDoorImage(root, "link1-red", false);
+            SetDoorImage(root, "link2", option.HasDoor(Vector2Int.left));
+            SetDoorImage(root, "link2-red", false);
+            SetDoorImage(root, "link3", option.HasDoor(Vector2Int.down));
+            SetDoorImage(root, "link3-red", false);
+            SetDoorImage(root, "link4", option.HasDoor(Vector2Int.right));
+            SetDoorImage(root, "link4-red", false);
+        }
+
+        private void SetDoorImage(GameObject root, string childName, bool isVisible)
+        {
+            Transform child = root.transform.Find(childName);
+            if (child != null)
+            {
+                child.gameObject.SetActive(isVisible);
+            }
+        }
+
+        private bool ContainsLayout(RoomDoorLayout layout)
+        {
+            for (int i = 0; i < currentChoices.Count; i++)
+            {
+                if (currentChoices[i] != null && currentChoices[i].doorLayout.HasSameDoors(layout))
+                    return true;
+            }
+
+            return false;
+        }
+
         private void Select(int index)
         {
             if (index < 0 || index >= currentChoices.Count)
                 return;
 
-            RoomCardData selected = currentChoices[index];
+            RoomPlacementOption selected = currentChoices[index];
             Hide();
-            Action<RoomCardData> callback = selectedCallback;
+            Action<RoomPlacementOption> callback = selectedCallback;
             selectedCallback = null;
             callback?.Invoke(selected);
         }
@@ -260,7 +331,7 @@ namespace UI
             }
 
             Hide();
-            Action<RoomCardData> callback = selectedCallback;
+            Action<RoomPlacementOption> callback = selectedCallback;
             selectedCallback = null;
             callback?.Invoke(null);
         }
@@ -268,6 +339,7 @@ namespace UI
         private void Hide()
         {
             placementFailedDismissedCallback = null;
+            isRotationMode = false;
             if (panelRoot != null)
             {
                 panelRoot.SetActive(false);

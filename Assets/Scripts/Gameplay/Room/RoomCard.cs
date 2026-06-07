@@ -9,6 +9,8 @@ namespace Gameplay
         public Vector2Int gridPosition;
         public int remainingDoors;
         public bool hasResolvedEvent;
+        public bool isPreview;
+        public RoomDoorLayout doorLayout;
         public Image roomImage;
         public Image wallImage;
         public Image upDoorImage;
@@ -73,11 +75,66 @@ namespace Gameplay
 
         public void Init(RoomCardData newData, Vector2Int newGridPosition)
         {
+            Init(newData, newGridPosition, RoomDoorLayout.FromData(newData));
+        }
+
+        public void Init(RoomCardData newData, Vector2Int newGridPosition, RoomDoorLayout newDoorLayout)
+        {
             data = newData;
             gridPosition = newGridPosition;
-            remainingDoors = data != null ? data.doorCount : 0;
+            doorLayout = newDoorLayout;
+            remainingDoors = doorLayout.Count;
             hasResolvedEvent = false;
+            isPreview = false;
 
+            RefreshVisuals();
+
+            if (data != null)
+            {
+                gameObject.name = data.roomName;
+            }
+        }
+
+        public void InitPreview(Vector2Int newGridPosition)
+        {
+            data = null;
+            gridPosition = newGridPosition;
+            doorLayout = default;
+            remainingDoors = 0;
+            hasResolvedEvent = true;
+            isPreview = true;
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sprite = null;
+            }
+
+            SetImageEnabled(roomImage, false);
+            SetImageEnabled(wallImage, false);
+            SetDoorVisible(upDoorImage, false);
+            SetDoorVisible(leftDoorImage, false);
+            SetDoorVisible(downDoorImage, false);
+            SetDoorVisible(rightDoorImage, false);
+            SetIconVisible(chestIcon, false);
+            SetIconVisible(eventIcon, false);
+            SetIconVisible(omenIcon, false);
+
+            Transform next = transform.Find("next");
+            if (next != null)
+            {
+                next.gameObject.SetActive(true);
+            }
+
+            gameObject.name = "next";
+        }
+
+        public bool HasDoor(Vector2Int direction)
+        {
+            return doorLayout.HasDoor(direction);
+        }
+
+        private void RefreshVisuals()
+        {
             if (spriteRenderer != null && data != null)
             {
                 spriteRenderer.sprite = data.sprite;
@@ -85,7 +142,12 @@ namespace Gameplay
 
             if (roomImage != null && data != null)
             {
-                roomImage.sprite = data.sprite;
+                if (data.sprite != null)
+                {
+                    roomImage.sprite = data.sprite;
+                }
+
+                roomImage.enabled = true;
                 roomImage.preserveAspect = true;
             }
 
@@ -95,15 +157,24 @@ namespace Gameplay
                 wallImage.enabled = data.wallSprite != null;
             }
 
-            SetDoorVisible(upDoorImage, data != null && data.doorUp);
-            SetDoorVisible(leftDoorImage, data != null && data.doorLeft);
-            SetDoorVisible(downDoorImage, data != null && data.doorDown);
-            SetDoorVisible(rightDoorImage, data != null && data.doorRight);
-            RefreshCategoryIcons();
-
-            if (data != null)
+            Transform next = transform.Find("next");
+            if (next != null)
             {
-                gameObject.name = data.roomName;
+                next.gameObject.SetActive(false);
+            }
+
+            SetDoorVisible(upDoorImage, data != null && doorLayout.up);
+            SetDoorVisible(leftDoorImage, data != null && doorLayout.left);
+            SetDoorVisible(downDoorImage, data != null && doorLayout.down);
+            SetDoorVisible(rightDoorImage, data != null && doorLayout.right);
+            RefreshCategoryIcons();
+        }
+
+        private void SetImageEnabled(Image image, bool enabled)
+        {
+            if (image != null)
+            {
+                image.enabled = enabled;
             }
         }
 

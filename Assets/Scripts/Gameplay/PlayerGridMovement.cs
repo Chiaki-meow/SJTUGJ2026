@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Gameplay
@@ -13,10 +14,16 @@ namespace Gameplay
         public int playerSortingOrder = 10;
         public Vector2 uiOrigin;
         public float uiTileSize = 503f;
+        public float moveAnimationDuration = 0.25f;
 
         private RectTransform rectTransform;
         private bool isWaitingForRoomSelection;
-        private readonly System.Collections.Generic.List<RoomCardData> roomChoices = new();
+        private bool isMoving;
+        private Coroutine moveRoutine;
+        private RoomPlacementOption pendingPlacementOption;
+        private Vector2Int pendingPlacementOrigin;
+        private Vector2Int pendingPlacementDirection;
+        private readonly System.Collections.Generic.List<RoomPlacementOption> roomChoices = new();
 
         private void Awake()
         {
@@ -70,7 +77,7 @@ namespace Gameplay
 
         private void Update()
         {
-            if (isWaitingForRoomSelection)
+            if (isWaitingForRoomSelection || isMoving)
                 return;
 
             if (inGameManager != null && !inGameManager.CanPlayerAct)
@@ -116,11 +123,11 @@ namespace Gameplay
                     return;
                 }
 
-                if (roomSelectionHandler != null && boardManager.GetRoomChoices(roomChoices, boardManager.roomChoiceCount, gridPosition, direction) > 0)
+                if (roomSelectionHandler != null && boardManager.GetRoomOptions(roomChoices, boardManager.roomChoiceCount, gridPosition, direction) > 0)
                 {
                     isWaitingForRoomSelection = true;
                     Vector2Int selectedDirection = direction;
-                    roomSelectionHandler.ShowRoomSelection(roomChoices, selectedCard => HandleRoomSelected(selectedDirection, selectedCard));
+                    roomSelectionHandler.ShowRoomSelection(roomChoices, selectedOption => HandleRoomSelected(selectedDirection, selectedOption));
                     return;
                 }
 
@@ -130,30 +137,46 @@ namespace Gameplay
                 nextPosition = placedRoom.gridPosition;
             }
 
-            gridPosition = nextPosition;
-            SnapToGridPosition();
-            EnterCurrentRoom();
+            MoveToGridPosition(nextPosition);
         }
 
-        private void HandleRoomSelected(Vector2Int direction, RoomCardData selectedCard)
+        private void HandleRoomSelected(Vector2Int direction, RoomPlacementOption selectedOption)
         {
             isWaitingForRoomSelection = false;
 
-            if (selectedCard == null)
+            if (selectedOption == null)
+                return;
+
+            if (inGameManager != null && !inGameManager.CanPlayerAct)
+            {
+                isWaitingForRoomSelection = false;
+                return;
+            }
+
+            Vector2Int requiredDoor = GetOppositeDirection(direction);
+            roomSelectionHandler.ShowRoomRotation(selectedOption, requiredDoor, rotatedOption => HandleRoomRotationConfirmed(direction, rotatedOption));
+        }
+
+        private void HandleRoomRotationConfirmed(Vector2Int direction, RoomPlacementOption selectedOption)
+        {
+            isWaitingForRoomSelection = false;
+
+            if (selectedOption == null)
                 return;
 
             if (inGameManager != null && !inGameManager.CanPlayerAct)
                 return;
 
-            if (!boardManager.TryPlaceSelectedRoom(gridPosition, direction, selectedCard, out RoomCard placedRoom))
+            if (!boardManager.CanPlaceSelectedRoom(gridPosition, direction, selectedOption, out _))
             {
                 ShowPlacementFailed("选择的房间无法与当前门对齐。");
                 return;
             }
 
-            gridPosition = placedRoom.gridPosition;
-            SnapToGridPosition();
-            EnterCurrentRoom();
+            pendingPlacementOrigin = gridPosition;
+            pendingPlacementDirection = direction;
+            pendingPlacementOption = selectedOption;
+            MoveToGridPosition(gridPosition + direction);
         }
 
         private void ShowPlacementFailed(string message)
@@ -185,17 +208,95 @@ namespace Gameplay
             }
         }
 
+        private void MoveToGridPosition(Vector2Int nextPosition)
+        {
+            if (rectTransform == null || moveAnimationDuration <= 0f)
+            {
+                gridPosition = nextPosition;
+                SnapToGridPosition();
+                ResolvePendingPlacement();
+                EnterCurrentRoom();
+                return;
+            }
+
+            if (moveRoutine != null)
+            {
+                StopCoroutine(moveRoutine);
+            }
+
+            Vector2 startPosition = GetUiAnchoredPosition(gridPosition);
+            Vector2 targetPosition = GetUiAnchoredPosition(nextPosition);
+            gridPosition = nextPosition;
+            moveRoutine = StartCoroutine(MoveToGridPositionRoutine(startPosition, targetPosition));
+        }
+
+        private IEnumerator MoveToGridPositionRoutine(Vector2 startPosition, Vector2 targetPosition)
+        {
+            isMoving = true;
+            float elapsed = 0f;
+
+            while (elapsed < moveAnimationDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / moveAnimationDuration);
+                float easedT = t * t * (3f - 2f * t);
+                rectTransform.anchoredPosition = Vector2.LerpUnclamped(startPosition, targetPosition, easedT);
+                yield return null;
+            }
+
+            rectTransform.anchoredPosition = targetPosition;
+            isMoving = false;
+            moveRoutine = null;
+            ResolvePendingPlacement();
+            EnterCurrentRoom();
+        }
+
+        private void ResolvePendingPlacement()
+        {
+            if (pendingPlacementOption == null)
+                return;
+
+            if (!boardManager.TryPlaceSelectedRoom(pendingPlacementOrigin, pendingPlacementDirection, pendingPlacementOption, out _))
+            {
+                ShowPlacementFailed("选择的房间无法放置。可能已被占用或门未对齐。");
+            }
+
+            pendingPlacementOption = null;
+        }
+
         private void SnapToGridPosition()
         {
             if (rectTransform != null)
             {
-                rectTransform.anchoredPosition = boardManager != null
-                    ? boardManager.GridToUiAnchoredPosition(gridPosition)
-                    : uiOrigin + new Vector2(gridPosition.x * uiTileSize, gridPosition.y * uiTileSize);
+                rectTransform.anchoredPosition = GetUiAnchoredPosition(gridPosition);
                 return;
             }
 
             transform.position = boardManager.GridToWorldPosition(gridPosition);
+        }
+
+        private Vector2 GetUiAnchoredPosition(Vector2Int targetGridPosition)
+        {
+            return boardManager != null
+                ? boardManager.GridToUiAnchoredPosition(targetGridPosition)
+                : uiOrigin + new Vector2(targetGridPosition.x * uiTileSize, targetGridPosition.y * uiTileSize);
+        }
+
+        private static Vector2Int GetOppositeDirection(Vector2Int direction)
+        {
+            if (direction == Vector2Int.up)
+                return Vector2Int.down;
+
+            if (direction == Vector2Int.down)
+                return Vector2Int.up;
+
+            if (direction == Vector2Int.left)
+                return Vector2Int.right;
+
+            if (direction == Vector2Int.right)
+                return Vector2Int.left;
+
+            return Vector2Int.zero;
         }
     }
 }

@@ -12,39 +12,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe955d3415c8554394aa2715c98ba2a, type: 3}
   m_Name: QuietWardEvent
   m_EditorClassIdentifier: 
-  eventName: "\u5B89\u9759\u75C5\u623F"
+  eventName: "\u503C\u73ED\u5BA4"
   category: 0
-  description: "\u75C5\u623F\u91CC\u7A7A\u65E0\u4E00\u4EBA\uFF0C\u53EA\u6709\u76D1\u62A4\u4EEA\u53D1\u51FA\u65AD\u7EED\u7684\u8702\u9E23\u3002"
+  description: "\u51CC\u4E71\u7684\u6298\u53E0\u5E8A\u4E0A\u6563\u843D\u7740\u51E0\u9875\u6253\u5370\u7684\u6587\u732E\uFF0C\u684C\u4E0A\u6CA1\u559D\u5B8C\u7684\u5496\u5561\u8868\u9762\u6F02\u6D6E\u7740\u4E00\u5C42\u8BE1\u5F02\u7684\u6CB9\u819C\u3002"
   choices:
-  - label: "\u5FEB\u901F\u641C\u67E5"
-    requiresCheck: 0
+  - label: "\u5728\u6298\u53E0\u5E8A\u4E0A\u77ED\u6682\u4F11\u606F"
+    requiresCheck: 1
     check:
-      stat: 0
-      comparison: 1
-      targetNumber: 1
+      stat: 1
+      comparison: 0
+      targetNumber: 5
     directOutcome:
-      resultText: "\u4F60\u627E\u5230\u4E86\u4E00\u70B9\u53EF\u7528\u7684\u836F\u7269\u3002"
-      effects:
-      - effectType: 1
-        stat: 0
-        statDelta: 0
-        itemData: {fileID: 11400000, guid: 4c12ff0ed51359d4090ebecdcf226b20, type: 2}
-        itemName: "\u9547\u9759\u836F\u7247"
-        itemAmount: 1
+      resultText: 
+      effects: []
     successOutcome:
-      resultText: 
-      effects: []
+      resultText: "\u4F60\u77ED\u6682\u4F11\u606F\u540E\u6062\u590D\u4E86\u4E9B\u8BB8\u4F53\u529B\uFF0C\u90A3\u5C42\u6CB9\u819C\u53EA\u662F\u9759\u9759\u6F02\u6D6E\u7740\u3002\u3010\u751F\u547D\u503C\u3011+2\u3002"
+      effects:
+      - effectType: 0
+        stat: 2
+        statDelta: 2
+        itemData: {fileID: 0}
+        itemPool: []
+        itemName: 
+        itemAmount: 1
     failureOutcome:
-      resultText: 
-      effects: []
-  - label: "\u9A6C\u4E0A\u79BB\u5F00"
+      resultText: "\u4F60\u77ED\u6682\u4F11\u606F\u540E\u6062\u590D\u4E86\u4E9B\u8BB8\u4F53\u529B\uFF0C\u4F46\u9192\u6765\u65F6\u90A3\u5C42\u6CB9\u819C\u6B63\u8D34\u7740\u676F\u58C1\u7F13\u6162\u8815\u52A8\u3002\u3010\u751F\u547D\u503C\u3011+2\uFF0C\u3010\u7CBE\u795E\u3011-1\u3002"
+      effects:
+      - effectType: 0
+        stat: 2
+        statDelta: 2
+        itemData: {fileID: 0}
+        itemPool: []
+        itemName: 
+        itemAmount: 1
+      - effectType: 0
+        stat: 1
+        statDelta: -1
+        itemData: {fileID: 0}
+        itemPool: []
+        itemName: 
+        itemAmount: 1
+  - label: "\u4E0D\u4F11\u606F\uFF0C\u7ACB\u523B\u79BB\u5F00"
     requiresCheck: 0
     check:
       stat: 0
       comparison: 1
       targetNumber: 1
     directOutcome:
-      resultText: "\u4F60\u6CA1\u6709\u4E45\u7559\uFF0C\u7EE7\u7EED\u5411\u533B\u9662\u6DF1\u5904\u524D\u8FDB\u3002"
+      resultText: "\u4F60\u6CA1\u6709\u78B0\u90A3\u5F20\u6298\u53E0\u5E8A\u3002"
       effects: []
     successOutcome:
       resultText: 

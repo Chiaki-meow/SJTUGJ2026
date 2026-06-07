@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3489b967acf57445acfa930369512fc, type: 3}
   m_Name: MedicalBook
   m_EditorClassIdentifier: 
-  itemId: medical_book
-  displayName: "\u75C5\u7406\u751F\u7406\u5B66\u4E66"
-  description: "\u5BC6\u5BC6\u9EBB\u9EBB\u7684\u533B\u5B66\u4E66\u3002\u4F7F\u7528\u540E\u7CBE\u795E\u503C
-    +1\u3002"
+  itemId: blue_life_death_love
+  displayName: "\u84DD\u8272\u751F\u6B7B\u604B"
+  description: "\u4E00\u5757\u539A\u539A\u7684\u677F\u7816\uFF0C\u6240\u6709\u533B\u5B66\u751F\u671F\u672B\u7684\u5669\u68A6\u3002\n\n\u62E5\u6709\u8BE5\u7269\u54C1\u65F6\uFF0C\u3010\u7CBE\u795E\u3011\u68C0\u5B9A\u53EF\u591A\u63B7
+    1 \u7C92\u9AB0\u5B50\u3002"
   icon: {fileID: 21300000, guid: 95672ed33fcd1410295a8305d3a5ba47, type: 3}
   category: 0
   maxStack: 1
-  maxUses: 1
-  effect: {fileID: 11400000, guid: 2ba132d9c5d4a1046a2eefaeb2d7983a, type: 2}
+  maxUses: 0
+  effect: {fileID: 11400000, guid: b95c642ed3247ed4abd3a3b7d7a8f243, type: 2}
