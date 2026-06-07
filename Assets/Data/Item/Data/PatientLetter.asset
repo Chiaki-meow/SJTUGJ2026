@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3489b967acf57445acfa930369512fc, type: 3}
+  m_Name: PatientLetter
+  m_EditorClassIdentifier: 
+  itemId: patient_letter
+  displayName: "\u60A3\u8005\u7684\u9057\u4E66"
+  description: "\u5199\u5728\u8840\u8FF9\u6591\u6591\u7EF7\u5E26\u4E0A\u7684\u9057\u8A00\u3002\u6301\u6709\u540E\uFF0C\u771F\u76F8\u63ED\u9732\u5931\u8D25\u4F1A\u8FDB\u5165\u5171\u60C5\u8DEF\u7EBF\u3002"
+  icon: {fileID: 21300000, guid: c7cb4b7e51d0349f29edc0cfcfd52da9, type: 3}
+  category: 1
+  maxStack: 1
+  maxUses: 0
+  effect: {fileID: 11400000, guid: b95c642ed3247ed4abd3a3b7d7a8f243, type: 2}
